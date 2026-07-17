@@ -5,31 +5,9 @@ const fs = require("fs");
 const path = require("path");
 const supabase = require("./lib/supabaseClient");
 
-// Đọc từ environment variables (không cần config.js)
-// TRIM và loại bỏ TẤT CẢ ký tự xuống dòng, tab, khoảng trắng thừa
-const ACCESS_TOKEN = (process.env.KIOTVIET_ACCESS_TOKEN || "")
-  .replace(/[\r\n\t]/g, '')
-  .trim();
-const RETAILER = (process.env.KIOTVIET_RETAILER || "")
-  .replace(/[\r\n\t]/g, '')
-  .trim();
-
-// Validate token
-if (!ACCESS_TOKEN) {
-  console.error("❌ KIOTVIET_ACCESS_TOKEN is empty!");
-  console.error("Token length:", process.env.KIOTVIET_ACCESS_TOKEN?.length || 0);
-  process.exit(1);
-}
-
-if (!RETAILER) {
-  console.error("❌ KIOTVIET_RETAILER is empty!");
-  console.error("Retailer length:", process.env.KIOTVIET_RETAILER?.length || 0);
-  process.exit(1);
-}
-
-// Debug log (chỉ hiện prefix để bảo mật)
-console.log(`🔑 Token: ${ACCESS_TOKEN.substring(0, 20)}...${ACCESS_TOKEN.substring(ACCESS_TOKEN.length - 20)} (length: ${ACCESS_TOKEN.length})`);
-console.log(`🏪 Retailer: ${RETAILER}`);
+// Đọc từ environment variables
+const ACCESS_TOKEN = (process.env.KIOTVIET_ACCESS_TOKEN || "").trim();
+const RETAILER = (process.env.KIOTVIET_RETAILER || "").trim();
 
 // Dynamic import for node-fetch (ESM module)
 let fetch;
