@@ -2,8 +2,8 @@ name: Daily ZNS Reminder
 
 on:
   schedule:
-    # Chạy mỗi ngày lúc 8:00 AM (UTC+7 = 1:00 AM UTC)
-    - cron: '0 1 * * *'
+    # Chạy mỗi 5 phút
+    - cron: '*/5 * * * *'
   
   # Cho phép trigger thủ công
   workflow_dispatch:
