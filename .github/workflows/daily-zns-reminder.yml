@@ -1,0 +1,36 @@
+name: ZNS Auto Reminder Daily
+
+on:
+  schedule:
+    # Chạy lúc 17:00 UTC = 0h đêm VN (UTC+7)
+    - cron: '0 17 * * *'
+  
+  # Cho phép chạy thủ công để test
+  workflow_dispatch:
+
+jobs:
+  send-zns-reminders:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Run ZNS Auto Reminder
+        env:
+          ZNS_API_KEY: ${{ secrets.ZNS_API_KEY }}
+          ZNS_TEMPLATE_ID: ${{ secrets.ZNS_TEMPLATE_ID }}
+          KIOTVIET_ACCESS_TOKEN: ${{ secrets.KIOTVIET_ACCESS_TOKEN }}
+          KIOTVIET_RETAILER: ${{ secrets.KIOTVIET_RETAILER }}
+          MINUTES_SINCE_PURCHASE: ${{ secrets.MINUTES_SINCE_PURCHASE }}
+          MINUTES_BETWEEN_REMINDERS: ${{ secrets.MINUTES_BETWEEN_REMINDERS }}
+          MAX_SEND_PER_RUN: ${{ secrets.MAX_SEND_PER_RUN }}
+        run: node runDaily.js
