@@ -1,3 +1,10 @@
+// Load environment variables từ .env
+require("dotenv").config();
+
+const fs = require("fs");
+const path = require("path");
+const supabase = require("./lib/supabaseClient");
+
 // Đọc từ environment variables (không cần config.js)
 const ACCESS_TOKEN = process.env.KIOTVIET_ACCESS_TOKEN || "";
 const RETAILER = process.env.KIOTVIET_RETAILER || "";
@@ -13,16 +20,71 @@ async function getFetch() {
 }
 
 /**
- * Lấy tất cả hóa đơn từ KiotViet
+ * Lấy thời điểm sync lần cuối từ Supabase
  */
-async function getAllInvoices({ pageSize = 100 } = {}) {
+async function getLastSyncTime() {
+  const { data, error } = await supabase
+    .from("sync_state")
+    .select("last_sync_time")
+    .eq("id", 1)
+    .single();
+
+  if (error) {
+    console.warn("⚠️  Could not load sync state, using default");
+    return new Date("2026-07-01T00:00:00");
+  }
+
+  return new Date(data.last_sync_time);
+}
+
+/**
+ * Lưu thời điểm sync vào Supabase
+ */
+async function saveLastSyncTime(time) {
+  const { error } = await supabase
+    .from("sync_state")
+    .update({ last_sync_time: time.toISOString(), updated_at: new Date().toISOString() })
+    .eq("id", 1);
+
+  if (error) {
+    console.error("❌ Could not save sync state:", error.message);
+  }
+}
+
+/**
+ * Lấy hóa đơn từ KiotViet - INCREMENTAL SYNC
+ * @param {Object} options
+ * @param {Date} options.fromDate - Lấy từ ngày nào (default: lấy từ lần sync cuối)
+ * @param {Date} options.toDate - Đến ngày nào (default: hôm nay)
+ * @param {number} options.pageSize - Số records/page
+ * @param {boolean} options.useIncrementalSync - Dùng incremental sync (default: true)
+ */
+async function getAllInvoices({ 
+  fromDate = null, 
+  toDate = new Date(),
+  pageSize = 100,
+  useIncrementalSync = true
+} = {}) {
+  // Nếu dùng incremental sync, lấy từ lần sync cuối
+  if (useIncrementalSync && !fromDate) {
+    fromDate = await getLastSyncTime();
+  } else if (!fromDate) {
+    fromDate = new Date('2026-07-01T00:00:00');
+  }
   const fetch = await getFetch();
   const allInvoices = [];
-  let page = 1;
+  let currentItem = 0;
+
+  // Format dates theo KiotViet API (ISO 8601)
+  const fromDateStr = fromDate.toISOString();
+  const toDateStr = toDate.toISOString();
+
+  console.log(`📅 Fetching invoices from ${fromDateStr.split('T')[0]} to ${toDateStr.split('T')[0]}`);
 
   while (true) {
-    const url = `https://public.kiotapi.com/invoices?page=${page}&pageSize=${pageSize}`;
-    console.log(`Fetching page ${page}...`);
+    // INCREMENTAL: Dùng lastModifiedFrom thay vì lấy toàn bộ
+    const url = `https://public.kiotapi.com/invoices?pageSize=${pageSize}&currentItem=${currentItem}&lastModifiedFrom=${fromDateStr}&lastModifiedTo=${toDateStr}`;
+    console.log(`Fetching from item ${currentItem}...`);
 
     const response = await fetch(url, {
       method: "GET",
@@ -44,25 +106,34 @@ async function getAllInvoices({ pageSize = 100 } = {}) {
     }
 
     allInvoices.push(...result.data);
+    currentItem += result.data.length;
 
+    // Nếu số records nhận được ít hơn pageSize => hết data
     if (result.data.length < pageSize) {
       break;
     }
-
-    page += 1;
   }
 
   console.log(`✅ Total invoices fetched: ${allInvoices.length}`);
+  
+  // Lưu sync state
+  if (useIncrementalSync) {
+    await saveLastSyncTime(toDate);
+    console.log(`💾 Saved sync state: ${toDate.toISOString()}`);
+  }
+  
   return allInvoices;
 }
 
 /**
- * Lọc hóa đơn đủ thời gian (30 ngày hoặc 5 phút test)
+ * Lọc hóa đơn ĐÃ ĐẾN HẠN NHẮC NHỞ (30 ngày từ ngày mua)
+ * Logic: Hôm nay >= purchaseDate + 30 ngày
+ * 
+ * @param {Array} invoices - Danh sách hóa đơn
+ * @param {number} daysThreshold - Số ngày kể từ lần mua (default: 30)
+ * @returns {Array} Danh sách hóa đơn đến hạn nhắc
  */
-function filterInvoicesDue(invoices, minutesThreshold = 43200) {
-  // 30 ngày = 43200 phút
-  // 5 phút test = 5 phút
-  
+function filterInvoicesDue(invoices, daysThreshold = 30) {
   const now = new Date();
   const dueInvoices = [];
 
@@ -73,9 +144,10 @@ function filterInvoicesDue(invoices, minutesThreshold = 43200) {
     }
 
     const purchaseDate = new Date(invoice.purchaseDate);
-    const minutesSince = Math.floor((now - purchaseDate) / 60000);
+    const daysSince = Math.floor((now - purchaseDate) / (1000 * 60 * 60 * 24));
 
-    if (minutesSince >= minutesThreshold) {
+    // CHECK: Đã đủ X ngày chưa?
+    if (daysSince >= daysThreshold) {
       dueInvoices.push({
         invoiceId: invoice.id,
         invoiceCode: invoice.code,
@@ -83,8 +155,8 @@ function filterInvoicesDue(invoices, minutesThreshold = 43200) {
         customerName: invoice.customerName,
         customerCode: invoice.customerCode,
         purchaseDate: purchaseDate,
-        minutesSince: minutesSince,
-        daysSince: Math.floor(minutesSince / 1440),
+        daysSince: daysSince,
+        dueDate: new Date(purchaseDate.getTime() + (daysThreshold * 24 * 60 * 60 * 1000)),
         total: invoice.total,
         // GIỮ NGUYÊN invoiceDetails để filter oil sau này
         invoiceDetails: invoice.invoiceDetails || [],
@@ -98,18 +170,126 @@ function filterInvoicesDue(invoices, minutesThreshold = 43200) {
     }
   }
 
-  // Thêm productNames cho dễ hiển thị
+  // Thêm productNames cho dễ hiển thì
   dueInvoices.forEach(inv => {
     inv.productNames = inv.products.map(p => p.name).join(", ");
   });
 
-  console.log(`✅ Found ${dueInvoices.length} invoices due for reminder`);
+  console.log(`✅ Found ${dueInvoices.length} invoices due for reminder (${daysThreshold}+ days)`);
   return dueInvoices;
 }
 
 /**
- * Lấy số điện thoại khách hàng
+ * Lấy danh sách tất cả sản phẩm từ KiotViet
  */
+async function getAllProducts() {
+  const fetch = await getFetch();
+  const allProducts = [];
+  let currentItem = 0;
+  const pageSize = 100;
+
+  console.log("📦 Fetching all products from KiotViet...");
+
+  while (true) {
+    const url = `https://public.kiotapi.com/products?pageSize=${pageSize}&currentItem=${currentItem}&includeInventory=false`;
+    
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        Retailer: RETAILER,
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`KiotViet API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (!result.data || result.data.length === 0) {
+      break;
+    }
+
+    allProducts.push(...result.data);
+    currentItem += result.data.length;
+
+    if (result.data.length < pageSize) {
+      break;
+    }
+  }
+
+  console.log(`✅ Fetched ${allProducts.length} products`);
+  return allProducts;
+}
+
+/**
+ * Lọc sản phẩm nhớt và lưu vào Supabase
+ */
+async function getOilProductIds() {
+  // Check Supabase trước
+  const { data: existing, error: selectError } = await supabase
+    .from("oil_products")
+    .select("product_id");
+
+  if (!selectError && existing && existing.length > 0) {
+    const productIds = existing.map(p => p.product_id);
+    console.log(`✅ Loaded ${productIds.length} oil product IDs from Supabase`);
+    return productIds;
+  }
+
+  // Nếu chưa có, fetch từ API
+  console.log("🛢️  Fetching oil products from API...");
+  const allProducts = await getAllProducts();
+  
+  // Lọc sản phẩm có category chứa "nhớt" (case insensitive)
+  const oilProducts = allProducts.filter(p => 
+    p.categoryName && p.categoryName.toLowerCase().includes("nhớt")
+  );
+  
+  // Lưu vào Supabase
+  const oilData = oilProducts.map(p => ({
+    product_id: p.id,
+    product_name: p.name,
+    category_name: p.categoryName
+  }));
+
+  const { error: insertError } = await supabase
+    .from("oil_products")
+    .upsert(oilData, { onConflict: "product_id" });
+
+  if (insertError) {
+    console.error("⚠️  Could not save to Supabase:", insertError.message);
+  } else {
+    console.log(`💾 Saved ${oilData.length} oil products to Supabase`);
+  }
+  
+  const productIds = oilProducts.map(p => p.id);
+  console.log(`✅ Found ${productIds.length} oil products`);
+  
+  return productIds;
+}
+
+/**
+ * Kiểm tra hoá đơn có chứa sản phẩm nhớt không
+ */
+function isOilInvoice(invoice, oilProductIds) {
+  if (!invoice.invoiceDetails || invoice.invoiceDetails.length === 0) {
+    return false;
+  }
+  
+  return invoice.invoiceDetails.some(item => 
+    oilProductIds.includes(item.productId)
+  );
+}
+
+/**
+ * Lọc chỉ lấy hoá đơn thay nhớt
+ */
+function filterOilInvoices(invoices, oilProductIds) {
+  return invoices.filter(inv => isOilInvoice(inv, oilProductIds));
+}
 async function getCustomerPhone(customerId) {
   const fetch = await getFetch();
   try {
@@ -181,23 +361,46 @@ module.exports = {
   filterInvoicesDue,
   getCustomerPhone,
   sendZNSForInvoice,
+  getLastSyncTime,
+  saveLastSyncTime,
+  getAllProducts,
+  getOilProductIds,
+  filterOilInvoices,
 };
 
 // Test nếu chạy trực tiếp
 if (require.main === module) {
   (async () => {
-    console.log("📋 Fetching invoices...");
-    const invoices = await getAllInvoices({ pageSize: 100 });
+    const lastSync = await getLastSyncTime();
+    console.log(`📋 Last sync: ${lastSync.toLocaleString('vi-VN')}`);
+    console.log(`📋 Fetching NEW/UPDATED invoices (incremental sync)...\n`);
     
-    console.log("\n⏰ Filtering due invoices (5 minutes test)...");
-    const dueInvoices = filterInvoicesDue(invoices, 5); // 5 phút test
+    const invoices = await getAllInvoices({ 
+      pageSize: 100,
+      useIncrementalSync: false, // Lấy tất cả để test
+      fromDate: new Date('2026-07-01')
+    });
+    
+    // Lấy danh sách nhớt
+    console.log("\n🛢️  Loading oil product IDs...");
+    const oilProductIds = await getOilProductIds();
+    
+    // Lọc hoá đơn nhớt
+    console.log("\n🛢️  Filtering oil invoices...");
+    const oilInvoices = filterOilInvoices(invoices, oilProductIds);
+    console.log(`✅ Found ${oilInvoices.length} oil invoices (out of ${invoices.length} total)`);
+    
+    // Lọc đến hạn
+    console.log("\n⏰ Filtering due invoices (30 days)...");
+    const dueInvoices = filterInvoicesDue(oilInvoices, 30);
     
     console.log("\n📊 RESULT:");
     dueInvoices.slice(0, 5).forEach((inv, i) => {
       console.log(`\n${i + 1}. ${inv.customerName} (${inv.customerCode})`);
       console.log(`   Invoice: ${inv.invoiceCode}`);
-      console.log(`   Date: ${inv.purchaseDate.toLocaleString()}`);
-      console.log(`   Minutes ago: ${inv.minutesSince}`);
+      console.log(`   Purchase: ${inv.purchaseDate.toLocaleDateString('vi-VN')}`);
+      console.log(`   Due date: ${inv.dueDate.toLocaleDateString('vi-VN')}`);
+      console.log(`   Days ago: ${inv.daysSince} days`);
       console.log(`   Products: ${inv.productNames}`);
     });
   })();

@@ -1,6 +1,22 @@
-node_modules/
+# Environment variables (QUAN TRỌNG - đừng commit!)
 .env
+
+# Node modules
+node_modules/
+
+# Logs
 *.log
-simple_reminder_log.json
-config.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Local test files
+test_*.js
