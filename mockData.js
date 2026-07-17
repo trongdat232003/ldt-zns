@@ -20,7 +20,7 @@ function createMockInvoices() {
       invoiceDetails: [
         {
           productId: 1007579236, // Nhớt TOTAL (có trong oil_product_ids.json)
-          productName: "Nhớt Xe Số TOTAL 700 10W40 1L",
+          productName: "Nhớt TOTAL 10W40",
           categoryName: "Nhớt TOTAL",
           quantity: 1,
           price: 195000,

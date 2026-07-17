@@ -148,17 +148,23 @@ async function sendZNSForInvoice(invoice, apiKey, templateId) {
   let displayName = invoice.customerName;
   
   if (invoice.productNames) {
-    // Giới hạn tổng độ dài: Tên khách hàng + sản phẩm <= 100 ký tự
-    const maxLength = 100;
+    // Giới hạn tổng độ dài: <= 50 ký tự cho an toàn
+    const maxLength = 50;
     const nameLength = invoice.customerName.length;
     const availableForProduct = maxLength - nameLength - 5; // -5 cho "\n📦 "
     
     let productText = invoice.productNames;
-    if (productText.length > availableForProduct) {
+    if (availableForProduct > 0 && productText.length > availableForProduct) {
       productText = productText.substring(0, availableForProduct - 3) + "...";
+    } else if (availableForProduct <= 0) {
+      // Tên khách hàng quá dài, chỉ dùng tên không thêm sản phẩm
+      displayName = invoice.customerName.substring(0, maxLength - 3) + "...";
+      productText = "";
     }
     
-    displayName = `${invoice.customerName}\n📦 ${productText}`;
+    if (productText) {
+      displayName = `${invoice.customerName}\n📦 ${productText}`;
+    }
   }
   
   const response = await fetch("https://api.yoursales.vn/api/public/zns/send", {
