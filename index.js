@@ -38,6 +38,9 @@ const CONFIG = {
 
   // Giới hạn số tin gửi mỗi lần chạy (để tránh spam)
   MAX_SEND_PER_RUN: parseInt(process.env.MAX_SEND_PER_RUN || "50"),
+  
+  // DRY RUN MODE: true = không gửi thật, false = gửi thật
+  DRY_RUN: process.env.DRY_RUN === "true",
 };
 
 // ============================================================================
@@ -48,9 +51,24 @@ async function runAutoReminder(config = CONFIG) {
   console.log("🚀 ZNS AUTO REMINDER - STARTING...\n");
   
   // ========================================================================
+  // DRY RUN MODE
+  // ========================================================================
+  if (config.DRY_RUN) {
+    console.log("=" .repeat(70));
+    console.log("🧪 DRY RUN MODE - KHÔNG GỬI TIN THẬT");
+    console.log("=" .repeat(70));
+    console.log("Chế độ này sẽ:");
+    console.log("  ✅ Lấy dữ liệu THẬT từ KiotViet");
+    console.log("  ✅ Lọc và xử lý như bình thường");
+    console.log("  ❌ KHÔNG GỬI ZNS (chỉ hiển thị)");
+    console.log("=" .repeat(70));
+    console.log("");
+  }
+  
+  // ========================================================================
   // VALIDATE ENVIRONMENT VARIABLES (BẢO MẬT)
   // ========================================================================
-  if (!config.ZNS_API_KEY) {
+  if (!config.DRY_RUN && !config.ZNS_API_KEY) {
     console.error("❌ ERROR: ZNS_API_KEY is missing!");
     console.error("   Please set environment variable: ZNS_API_KEY");
     return { success: false, error: "Missing ZNS_API_KEY" };
@@ -58,11 +76,14 @@ async function runAutoReminder(config = CONFIG) {
 
   console.log("=" .repeat(70));
   console.log("⚙️  CONFIG:");
+  console.log(`   Mode: ${config.DRY_RUN ? '🧪 DRY RUN (Test)' : '🚀 PRODUCTION (Real)'}`);
   console.log(`   Minutes since purchase: ${config.MINUTES_SINCE_PURCHASE} (${Math.floor(config.MINUTES_SINCE_PURCHASE / 1440)} days)`);
   console.log(`   Minutes between reminders: ${config.MINUTES_BETWEEN_REMINDERS} (${Math.floor(config.MINUTES_BETWEEN_REMINDERS / 1440)} days)`);
   console.log(`   Max send per run: ${config.MAX_SEND_PER_RUN}`);
   console.log(`   ZNS Template ID: ${config.ZNS_TEMPLATE_ID}`);
-  console.log(`   ZNS API Key: ${config.ZNS_API_KEY.substring(0, 20)}...`); // Chỉ show 20 ký tự đầu
+  if (!config.DRY_RUN) {
+    console.log(`   ZNS API Key: ${config.ZNS_API_KEY.substring(0, 20)}...`); // Chỉ show 20 ký tự đầu
+  }
   console.log("=" .repeat(70));
 
   try {
@@ -173,24 +194,43 @@ async function runAutoReminder(config = CONFIG) {
 
       try {
         // Gửi ZNS
-        console.log(`    📤 Sending ZNS...`);
-        const result = await sendZNSForInvoice(
-          invoice,
-          config.ZNS_API_KEY,
-          config.ZNS_TEMPLATE_ID
-        );
-
-        if (result.success) {
-          console.log(`    ✅ SUCCESS - Status: ${result.status}`);
+        if (config.DRY_RUN) {
+          // DRY RUN: Không gửi thật, chỉ hiển thị
+          console.log(`    🧪 [DRY RUN] Would send ZNS to ${phone}`);
+          console.log(`       Template: ${config.ZNS_TEMPLATE_ID}`);
+          console.log(`       Customer: ${invoice.customerName}`);
+          console.log(`       Products: ${invoice.productNames}`);
+          
           results.sent += 1;
-
-          // Lưu log
-          markAsSent(invoice, result);
-          console.log(`    💾 Logged to file`);
+          
+          // Vẫn log để test logic
+          markAsSent(invoice, { 
+            success: true, 
+            status: 200, 
+            response: { message: "DRY RUN - Not sent" } 
+          });
+          console.log(`    💾 Logged (dry run)`);
         } else {
-          console.log(`    ❌ FAILED - Status: ${result.status}`);
-          console.log(`    Response: ${JSON.stringify(result.response)}`);
-          results.failed += 1;
+          // PRODUCTION: Gửi thật
+          console.log(`    📤 Sending ZNS...`);
+          const result = await sendZNSForInvoice(
+            invoice,
+            config.ZNS_API_KEY,
+            config.ZNS_TEMPLATE_ID
+          );
+
+          if (result.success) {
+            console.log(`    ✅ SUCCESS - Status: ${result.status}`);
+            results.sent += 1;
+
+            // Lưu log
+            markAsSent(invoice, result);
+            console.log(`    💾 Logged to file`);
+          } else {
+            console.log(`    ❌ FAILED - Status: ${result.status}`);
+            console.log(`    Response: ${JSON.stringify(result.response)}`);
+            results.failed += 1;
+          }
         }
       } catch (error) {
         console.log(`    ❌ ERROR: ${error.message}`);

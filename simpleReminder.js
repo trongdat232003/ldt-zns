@@ -1,4 +1,6 @@
-const { ACCESS_TOKEN, RETAILER } = require("./config");
+// Đọc từ environment variables (không cần config.js)
+const ACCESS_TOKEN = process.env.KIOTVIET_ACCESS_TOKEN || "";
+const RETAILER = process.env.KIOTVIET_RETAILER || "";
 
 // Dynamic import for node-fetch (ESM module)
 let fetch;

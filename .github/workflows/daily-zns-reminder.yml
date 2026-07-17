@@ -33,4 +33,5 @@ jobs:
           MINUTES_SINCE_PURCHASE: ${{ secrets.MINUTES_SINCE_PURCHASE }}
           MINUTES_BETWEEN_REMINDERS: ${{ secrets.MINUTES_BETWEEN_REMINDERS }}
           MAX_SEND_PER_RUN: ${{ secrets.MAX_SEND_PER_RUN }}
+          DRY_RUN: ${{ secrets.DRY_RUN }}
         run: node runDaily.js
