@@ -1,0 +1,6 @@
+node_modules/
+.env
+*.log
+simple_reminder_log.json
+config.js
+.DS_Store

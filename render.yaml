@@ -1,0 +1,25 @@
+services:
+  # Cron Job - Chạy mỗi ngày lúc 0h
+  - type: cron
+    name: zns-auto-reminder
+    env: node
+    schedule: "0 0 * * *"  # 0h mỗi ngày (UTC+0 = 7h sáng VN)
+    buildCommand: npm install
+    startCommand: node runDaily.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ZNS_API_KEY
+        sync: false  # Nhập thủ công trên Render (bảo mật)
+      - key: ZNS_TEMPLATE_ID
+        value: 499462
+      - key: KIOTVIET_ACCESS_TOKEN
+        sync: false
+      - key: KIOTVIET_RETAILER
+        sync: false
+      - key: MINUTES_SINCE_PURCHASE
+        value: 43200
+      - key: MINUTES_BETWEEN_REMINDERS
+        value: 36000
+      - key: MAX_SEND_PER_RUN
+        value: 50

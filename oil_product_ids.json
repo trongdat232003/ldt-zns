@@ -1,0 +1,937 @@
+{
+  "updatedAt": "2026-07-16T11:28:16.777Z",
+  "totalProducts": 4776,
+  "oilProductsCount": 116,
+  "productIds": [
+    30591554,
+    1007578643,
+    1007578644,
+    1008587331,
+    1014150076,
+    34192921,
+    1013592714,
+    31817586,
+    31040417,
+    1007579179,
+    30859612,
+    1007579180,
+    30785208,
+    1007579181,
+    1007579182,
+    30445402,
+    1007579186,
+    30445384,
+    1007579215,
+    31262534,
+    31262535,
+    30852459,
+    30852460,
+    29662384,
+    1007579236,
+    1007579235,
+    1007579237,
+    1007579238,
+    31784080,
+    31784190,
+    1007579239,
+    29163074,
+    29163086,
+    29163116,
+    29163120,
+    29163128,
+    29160293,
+    1007579241,
+    29160323,
+    29160404,
+    29160460,
+    29160465,
+    30787528,
+    30787614,
+    29160421,
+    31031278,
+    30902421,
+    29160270,
+    1007579242,
+    31031188,
+    31031192,
+    31031194,
+    31031195,
+    31031197,
+    1007579243,
+    1007579244,
+    32768139,
+    32303376,
+    1007579246,
+    1007579247,
+    1007579248,
+    29163157,
+    29163159,
+    29163160,
+    29163161,
+    29162967,
+    29163009,
+    1007579251,
+    29162941,
+    29162946,
+    29162957,
+    29162988,
+    29162995,
+    29157521,
+    1007579253,
+    29157471,
+    29157488,
+    1007579254,
+    29157441,
+    29157450,
+    29157459,
+    29157465,
+    29141534,
+    1007579255,
+    29141555,
+    29141516,
+    1007579256,
+    29141519,
+    29141522,
+    29141528,
+    29141531,
+    29141506,
+    1007579257,
+    29141469,
+    29141509,
+    29141511,
+    29141513,
+    29141479,
+    1007579258,
+    29141483,
+    29141487,
+    29141491,
+    29141493,
+    1008820717,
+    1012352140,
+    1014839605,
+    33802093,
+    1013480768,
+    30766749,
+    1011561598,
+    1007579487,
+    33941852,
+    31784009,
+    33891693,
+    1007579618,
+    32136247
+  ],
+  "products": [
+    {
+      "id": 30591554,
+      "code": "SP013712",
+      "name": "4232055470848 - Nhớt",
+      "categoryId": 898822,
+      "categoryName": "Tích Lũy"
+    },
+    {
+      "id": 1007578643,
+      "code": "SP-24110675647",
+      "name": "BÁNH BƠM NHỚT DREAM - CÓ REN",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 1007578644,
+      "code": "2411WAVE2129787",
+      "name": "Bánh Bơm Nhớt Liền *T",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 1008587331,
+      "code": "SP000096",
+      "name": "Bánh Bơm Nhớt WAVE 110 *H (23 Răng)",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 1014150076,
+      "code": "5VTE33250000",
+      "name": "Bánh Răng Bơm Nhớt SIRUS BXC *H",
+      "categoryId": 1000345171,
+      "categoryName": "Bánh Bơm Nhớt"
+    },
+    {
+      "id": 34192921,
+      "code": "52BH35910000",
+      "name": "Cảm Biến (EOT) Nhớt SIRUS FI *H (VAT)",
+      "categoryId": 1000315968,
+      "categoryName": "Cảm Biến"
+    },
+    {
+      "id": 1013592714,
+      "code": "SP001007",
+      "name": "Đại Tu Động Cơ WAVE 110, Bao Gồm: Nồi (Gia Công) + Dàn Cam (Hãng), Ron Phớt Hãng, Nhớt 1L",
+      "categoryId": 1000326075,
+      "categoryName": "Động Cơ WAVE 110"
+    },
+    {
+      "id": 31817586,
+      "code": "SP014042",
+      "name": "Kiểm Tra Nhớt Máy + Nhớt Láp (Xe Ga)",
+      "categoryId": 1000228819,
+      "categoryName": "DỊCH VỤ"
+    },
+    {
+      "id": 31040417,
+      "code": "SP013832",
+      "name": "Kiểm Tra Xung Quanh Xe Xem Có Chảy Nhớt",
+      "categoryId": 903596,
+      "categoryName": "Bão Dưỡng"
+    },
+    {
+      "id": 1007579179,
+      "code": "11100KWB600",
+      "name": "Lốc Giữa Wave RSX 110 *H (Bên Xả Nhớt)",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 30859612,
+      "code": "16510-45H20-000",
+      "name": "Lọc Nhớt SATRIA FI *H",
+      "categoryId": 1000343961,
+      "categoryName": "Lọc Nhớt"
+    },
+    {
+      "id": 1007579180,
+      "code": "16510B45H10N000",
+      "name": "Lọc Nhớt Suzuki AXELO *H",
+      "categoryId": 1000343961,
+      "categoryName": "Lọc Nhớt"
+    },
+    {
+      "id": 30785208,
+      "code": "SP013772",
+      "name": "Lọc Nhớt VESPA *H",
+      "categoryId": 1000314299,
+      "categoryName": "Vỏ Xe"
+    },
+    {
+      "id": 1007579181,
+      "code": "5YPE34400000",
+      "name": "Lọc Nhớt YAMAHA *H",
+      "categoryId": 1000343961,
+      "categoryName": "Lọc Nhớt"
+    },
+    {
+      "id": 1007579182,
+      "code": "SP-24112140314",
+      "name": "Lốc Số Wave 100 TQ Bơm Nhớt Liền",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 30445402,
+      "code": "90495MN5000",
+      "name": "Lông Đền Đồng Xả Nhớt Láp HONDA *H,",
+      "categoryId": 897099,
+      "categoryName": "Lông Đền"
+    },
+    {
+      "id": 1007579186,
+      "code": "9410912000",
+      "name": "Long Đền Xả Nhớt *H, Ốc Xả 12mm",
+      "categoryId": 897099,
+      "categoryName": "Lông Đền"
+    },
+    {
+      "id": 30445384,
+      "code": "90407259000",
+      "name": "Lông Đền Xả Nhớt H, Ốc Xả 17mm",
+      "categoryId": 897099,
+      "categoryName": "Lông Đền"
+    },
+    {
+      "id": 1007579215,
+      "code": "55PE34471000",
+      "name": "Nắp Đậy Lọc Nhớt Ex150 *H",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 31262534,
+      "code": "SP013898",
+      "name": "Nhớt Láp (Số) 85W140 TOTAL",
+      "categoryId": 1000327656,
+      "categoryName": "Nhớt Láp TOTAL"
+    },
+    {
+      "id": 31262535,
+      "code": "SP013899",
+      "name": "Nhớt Láp (Số) 85W140 TOTAL",
+      "categoryId": 1000327656,
+      "categoryName": "Nhớt Láp TOTAL"
+    },
+    {
+      "id": 30852459,
+      "code": "8936219880039",
+      "name": "Nhớt Láp (Số) POWERFUL, 120ml, Giảm Tiếng Hú Láp",
+      "categoryId": 1000191553,
+      "categoryName": "Nhớt"
+    },
+    {
+      "id": 30852460,
+      "code": "SP013792",
+      "name": "Nhớt Láp (Số) POWERFUL, 120ml, Giảm Tiếng Hú Láp",
+      "categoryId": 1000191553,
+      "categoryName": "Nhớt"
+    },
+    {
+      "id": 29662384,
+      "code": "SP013425",
+      "name": "Nhớt Láp (Số) TOTAL 80W90",
+      "categoryId": 1000327656,
+      "categoryName": "Nhớt Láp TOTAL"
+    },
+    {
+      "id": 1007579236,
+      "code": "4712589390675",
+      "name": "Nhớt Láp (Số) TOTAL 80W90",
+      "categoryId": 1000327656,
+      "categoryName": "Nhớt Láp TOTAL"
+    },
+    {
+      "id": 1007579235,
+      "code": "24102931312",
+      "name": "Nhớt Láp MOTUL",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 1007579237,
+      "code": "8936029474763",
+      "name": "Nhớt Xe Ga Castrol Power 1 0,8L (VAT)",
+      "categoryId": 933789,
+      "categoryName": "Nhớt CASTROL"
+    },
+    {
+      "id": 1007579238,
+      "code": "3374650425818",
+      "name": "Nhớt Xe ga MOTUL EXPERT 10W40 (0,8L) (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 31784080,
+      "code": "SP014033",
+      "name": "Nhớt Xe ga MOTUL EXPERT 10W40 *1L",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 31784190,
+      "code": "SP014034",
+      "name": "Nhớt Xe Ga MOTUL POWER LE 5W40 *1L4 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 1007579239,
+      "code": "3374650425856",
+      "name": "Nhớt Xe Ga MOTUL POWER LE 5W40 0,8L (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163074,
+      "code": "SP013286",
+      "name": "Nhớt Xe Ga MOTUL POWER LE 5W40 0,9L (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163086,
+      "code": "SP013287",
+      "name": "Nhớt Xe Ga MOTUL POWER LE 5W40 1L (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163116,
+      "code": "SP013288",
+      "name": "Nhớt Xe Ga MOTUL POWER LE 5W40 1L1 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163120,
+      "code": "SP013289",
+      "name": "Nhớt Xe Ga MOTUL POWER LE 5W40 1L2 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163128,
+      "code": "SP013290",
+      "name": "Nhớt Xe Ga MOTUL POWER LE 5W40 1L3 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29160293,
+      "code": "SP013271",
+      "name": "Nhớt Xe Ga TOTAL 500 10W40 0,8L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579241,
+      "code": "1028536",
+      "name": "Nhớt Xe Ga TOTAL 500 10W40 0,8L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29160323,
+      "code": "SP013272",
+      "name": "Nhớt Xe Ga TOTAL 500 10W40 0,9L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29160404,
+      "code": "SP013273",
+      "name": "Nhớt Xe Ga TOTAL 500 10W40 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29160460,
+      "code": "SP013275",
+      "name": "Nhớt Xe Ga TOTAL 500 10W40 1L2",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29160465,
+      "code": "SP013276",
+      "name": "Nhớt Xe Ga TOTAL 500 10W40 1L3",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 30787528,
+      "code": "SP013773",
+      "name": "Nhớt Xe Ga TOTAL 500 20W40 0,8L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 30787614,
+      "code": "SP013774",
+      "name": "Nhớt Xe Ga TOTAL 500 20W40 0,9L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29160421,
+      "code": "SP013274",
+      "name": "Nhớt Xe Ga TOTAL 500 20W40 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 31031278,
+      "code": "SP013823",
+      "name": "Nhớt Xe Ga TOTAL 500 20W40 1L4",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 30902421,
+      "code": "SP013802",
+      "name": "Nhớt Xe Ga TOTAL 700 10W40 0,8L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29160270,
+      "code": "SP013270",
+      "name": "Nhớt Xe Ga TOTAL 700 10W40 0,8L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579242,
+      "code": "8888482003182",
+      "name": "Nhớt Xe Ga TOTAL 700 10W40 0,8L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 31031188,
+      "code": "SP013818",
+      "name": "Nhớt Xe Ga TOTAL 700 10W40 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 31031192,
+      "code": "SP013819",
+      "name": "Nhớt Xe Ga TOTAL 700 10W40 1L1",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 31031194,
+      "code": "SP013820",
+      "name": "Nhớt Xe Ga TOTAL 700 10W40 1L2",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 31031195,
+      "code": "SP013821",
+      "name": "Nhớt Xe Ga TOTAL 700 10W40 1L3",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 31031197,
+      "code": "SP013822",
+      "name": "Nhớt Xe Ga TOTAL 700 10W40 1L4",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579243,
+      "code": "8936029474787",
+      "name": "Nhớt Xe Số CASTROL POWER 1 10W40 0,8L (VAT)",
+      "categoryId": 933789,
+      "categoryName": "Nhớt CASTROL"
+    },
+    {
+      "id": 1007579244,
+      "code": "8936029474305",
+      "name": "Nhớt Xe Số CASTROL POWER 1 10W40 1L",
+      "categoryId": 933789,
+      "categoryName": "Nhớt CASTROL"
+    },
+    {
+      "id": 32768139,
+      "code": "SP014353",
+      "name": "Nhớt Xe Số CASTROL POWER 1 10W40 1L1",
+      "categoryId": 933789,
+      "categoryName": "Nhớt CASTROL"
+    },
+    {
+      "id": 32303376,
+      "code": "SP014146",
+      "name": "Nhớt Xe Số Fuchs Silkolene Pro 4 XP 10W40",
+      "categoryId": 933791,
+      "categoryName": "Nhớt FUSH SIKOLIN"
+    },
+    {
+      "id": 1007579246,
+      "code": "24110969795",
+      "name": "Nhớt Xe So MOTUL 300V 10W40 (1L)",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 1007579247,
+      "code": "3374650424828",
+      "name": "Nhớt Xe Số MOTUL 3100 10W40 0,8L (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 1007579248,
+      "code": "3374650421421",
+      "name": "Nhớt Xe Số MOTUL 3100 10W40 1L (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163157,
+      "code": "SP013291",
+      "name": "Nhớt Xe Số MOTUL 3100 10W40 1L1 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163159,
+      "code": "SP013292",
+      "name": "Nhớt Xe Số MOTUL 3100 10W40 1L2 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163160,
+      "code": "SP013293",
+      "name": "Nhớt Xe Số MOTUL 3100 10W40 1L3 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163161,
+      "code": "SP013294",
+      "name": "Nhớt Xe Số MOTUL 3100 10W40 1L4 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29162967,
+      "code": "SP013282",
+      "name": "Nhớt Xe Số MOTUL 7100 10W40 0,8L (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29163009,
+      "code": "SP013285",
+      "name": "Nhớt Xe Số MOTUL 7100 10W40 1L (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 1007579251,
+      "code": "3374650415833",
+      "name": "Nhớt Xe Số MOTUL 7100 10W40 1L (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29162941,
+      "code": "SP013279",
+      "name": "Nhớt Xe Số MOTUL 7100 10W40 1L1 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29162946,
+      "code": "SP013280",
+      "name": "Nhớt Xe Số MOTUL 7100 10W40 1L2 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29162957,
+      "code": "SP013281",
+      "name": "Nhớt Xe Số MOTUL 7100 10W40 1L3 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29162988,
+      "code": "SP013283",
+      "name": "Nhớt Xe Số MOTUL 7100 10W40 1L4 (VAT)",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29162995,
+      "code": "SP013284",
+      "name": "Nhớt Xe Số MOTUL 7100 10W40 3L6",
+      "categoryId": 1000318349,
+      "categoryName": "Nhớt Motul"
+    },
+    {
+      "id": 29157521,
+      "code": "SP013269",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 0,8L (VAT)",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579253,
+      "code": "1019464130",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 0,8L (VAT)",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29157471,
+      "code": "SP013267",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 0,9L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29157488,
+      "code": "SP013268",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579254,
+      "code": "1019465",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29157441,
+      "code": "SP013263",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 1L1",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29157450,
+      "code": "SP013264",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 1L2",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29157459,
+      "code": "SP013265",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 1L3",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29157465,
+      "code": "SP013266",
+      "name": "Nhớt Xe Số TOTAL 500 20W40 1L4",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141534,
+      "code": "SP013258",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 0,8L (VAT)",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579255,
+      "code": "8888482114185",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 0,8L (VAT)",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141555,
+      "code": "SP013259",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 0,9L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141516,
+      "code": "SP013253",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 1L (VAT)",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579256,
+      "code": "8888482052111",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 1L (VAT)",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141519,
+      "code": "SP013254",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 1L1",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141522,
+      "code": "SP013255",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 1L2",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141528,
+      "code": "SP013256",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 1L3",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141531,
+      "code": "SP013257",
+      "name": "Nhớt Xe Số TOTAL 700 10W40 1L4",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141506,
+      "code": "SP013249",
+      "name": "Nhớt Xe Số TOTAL 900 10W40 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579257,
+      "code": "8888482105114",
+      "name": "Nhớt Xe Số TOTAL 900 10W40 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141469,
+      "code": "SP013243",
+      "name": "Nhớt Xe Số TOTAL 900 10W40 1L1",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141509,
+      "code": "SP013250",
+      "name": "Nhớt Xe Số TOTAL 900 10W40 1L2",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141511,
+      "code": "SP013251",
+      "name": "Nhớt Xe Số TOTAL 900 10W40 1L3",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141513,
+      "code": "SP013252",
+      "name": "Nhớt Xe Số TOTAL 900 10W40 1L4",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141479,
+      "code": "SP013244",
+      "name": "Nhớt Xe Số TOTAL 900 10W50 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1007579258,
+      "code": "8888482089117",
+      "name": "Nhớt Xe Số TOTAL 900 10W50 1L",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141483,
+      "code": "SP013245",
+      "name": "Nhớt Xe Số TOTAL 900 10W50 1L1",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141487,
+      "code": "SP013246",
+      "name": "Nhớt Xe Số TOTAL 900 10W50 1L2",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141491,
+      "code": "SP013247",
+      "name": "Nhớt Xe Số TOTAL 900 10W50 1L3",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 29141493,
+      "code": "SP013248",
+      "name": "Nhớt Xe Số TOTAL 900 10W50 1L4",
+      "categoryId": 1000319016,
+      "categoryName": "Nhớt TOTAL"
+    },
+    {
+      "id": 1008820717,
+      "code": "SP000114",
+      "name": "Ốc Nhớt EXCITER *H",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 1012352140,
+      "code": "SP000566",
+      "name": "Ốc Nhớt Nam Châm",
+      "categoryId": 1000342857,
+      "categoryName": "Ốc, Tán"
+    },
+    {
+      "id": 1014839605,
+      "code": "SP013099",
+      "name": "Ốc Nhớt NVX (Loại To), Kèm Xim *T, Chung Nắp Supap Dream",
+      "categoryId": 1000336633,
+      "categoryName": "Ốc Xả Nhớt"
+    },
+    {
+      "id": 33802093,
+      "code": "SP014635",
+      "name": "Ốc Xả Nhớt 13mm",
+      "categoryId": 1000336633,
+      "categoryName": "Ốc Xả Nhớt"
+    },
+    {
+      "id": 1013480768,
+      "code": "SP000980",
+      "name": "Ốc Xả Nhớt EX 150 *H",
+      "categoryId": 1000336634,
+      "categoryName": "EX 150"
+    },
+    {
+      "id": 30766749,
+      "code": "903401281600",
+      "name": "Ốc Xả Nhớt YAMAHA *H, 12mm",
+      "categoryId": 1000336633,
+      "categoryName": "Ốc Xả Nhớt"
+    },
+    {
+      "id": 1011561598,
+      "code": "SP000388",
+      "name": "Ron Chân Lòng",
+      "categoryId": 1000191553,
+      "categoryName": "Nhớt"
+    },
+    {
+      "id": 1007579487,
+      "code": "SP-24112631153",
+      "name": "Taro + Thay Ốc Nhớt",
+      "categoryId": 1000197244,
+      "categoryName": "Phụ Tùng"
+    },
+    {
+      "id": 33941852,
+      "code": "11342-25G00V000",
+      "name": "Ti (Ty) Thăm Nhớt SATRIA FI *H",
+      "categoryId": 913063,
+      "categoryName": "Ty Thăm Nhớt"
+    },
+    {
+      "id": 31784009,
+      "code": "SP014031",
+      "name": "Ty Thăm Nhớt DREAM *T",
+      "categoryId": 913063,
+      "categoryName": "Ty Thăm Nhớt"
+    },
+    {
+      "id": 33891693,
+      "code": "1SKE5362000",
+      "name": "Ty Thăm Nhớt Xe Ga YAMAHA *H",
+      "categoryId": 913063,
+      "categoryName": "Ty Thăm Nhớt"
+    },
+    {
+      "id": 1007579618,
+      "code": "241122",
+      "name": "Xim Nắp Đậy Lọc Nhớt Ex150 *H",
+      "categoryId": 1000326071,
+      "categoryName": "Xim"
+    },
+    {
+      "id": 32136247,
+      "code": "932106080100",
+      "name": "Xim Nắp Lọc Nhớt SIRUS FI *H",
+      "categoryId": 1000326071,
+      "categoryName": "Xim"
+    }
+  ]
+}
