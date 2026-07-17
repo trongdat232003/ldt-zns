@@ -43,7 +43,10 @@ async function getLastSyncTime() {
 async function saveLastSyncTime(time) {
   const { error } = await supabase
     .from("sync_state")
-    .update({ last_sync_time: time.toISOString(), updated_at: new Date().toISOString() })
+    .update({
+      last_sync_time: time.toISOString(),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", 1);
 
   if (error) {
@@ -59,17 +62,17 @@ async function saveLastSyncTime(time) {
  * @param {number} options.pageSize - Số records/page
  * @param {boolean} options.useIncrementalSync - Dùng incremental sync (default: true)
  */
-async function getAllInvoices({ 
-  fromDate = null, 
+async function getAllInvoices({
+  fromDate = null,
   toDate = new Date(),
   pageSize = 100,
-  useIncrementalSync = true
+  useIncrementalSync = true,
 } = {}) {
   // Nếu dùng incremental sync, lấy từ lần sync cuối
   if (useIncrementalSync && !fromDate) {
     fromDate = await getLastSyncTime();
   } else if (!fromDate) {
-    fromDate = new Date('2026-07-01T00:00:00');
+    fromDate = new Date("2026-07-01T00:00:00");
   }
   const fetch = await getFetch();
   const allInvoices = [];
@@ -79,7 +82,9 @@ async function getAllInvoices({
   const fromDateStr = fromDate.toISOString();
   const toDateStr = toDate.toISOString();
 
-  console.log(`📅 Fetching invoices from ${fromDateStr.split('T')[0]} to ${toDateStr.split('T')[0]}`);
+  console.log(
+    `📅 Fetching invoices from ${fromDateStr.split("T")[0]} to ${toDateStr.split("T")[0]}`,
+  );
 
   while (true) {
     // INCREMENTAL: Dùng lastModifiedFrom thay vì lấy toàn bộ
@@ -115,20 +120,20 @@ async function getAllInvoices({
   }
 
   console.log(`✅ Total invoices fetched: ${allInvoices.length}`);
-  
+
   // Lưu sync state
   if (useIncrementalSync) {
     await saveLastSyncTime(toDate);
     console.log(`💾 Saved sync state: ${toDate.toISOString()}`);
   }
-  
+
   return allInvoices;
 }
 
 /**
  * Lọc hóa đơn ĐÃ ĐẾN HẠN NHẮC NHỞ (30 ngày từ ngày mua)
  * Logic: Hôm nay >= purchaseDate + 30 ngày
- * 
+ *
  * @param {Array} invoices - Danh sách hóa đơn
  * @param {number} daysThreshold - Số ngày kể từ lần mua (default: 30)
  * @returns {Array} Danh sách hóa đơn đến hạn nhắc
@@ -156,26 +161,32 @@ function filterInvoicesDue(invoices, daysThreshold = 30) {
         customerCode: invoice.customerCode,
         purchaseDate: purchaseDate,
         daysSince: daysSince,
-        dueDate: new Date(purchaseDate.getTime() + (daysThreshold * 24 * 60 * 60 * 1000)),
+        dueDate: new Date(
+          purchaseDate.getTime() + daysThreshold * 24 * 60 * 60 * 1000,
+        ),
         total: invoice.total,
         // GIỮ NGUYÊN invoiceDetails để filter oil sau này
         invoiceDetails: invoice.invoiceDetails || [],
         // Lấy sản phẩm để hiển thị
-        products: invoice.invoiceDetails ? invoice.invoiceDetails.slice(0, 3).map(item => ({
-          name: item.productName,
-          quantity: item.quantity,
-          price: item.price,
-        })) : [],
+        products: invoice.invoiceDetails
+          ? invoice.invoiceDetails.slice(0, 3).map((item) => ({
+              name: item.productName,
+              quantity: item.quantity,
+              price: item.price,
+            }))
+          : [],
       });
     }
   }
 
   // Thêm productNames cho dễ hiển thì
-  dueInvoices.forEach(inv => {
-    inv.productNames = inv.products.map(p => p.name).join(", ");
+  dueInvoices.forEach((inv) => {
+    inv.productNames = inv.products.map((p) => p.name).join(", ");
   });
 
-  console.log(`✅ Found ${dueInvoices.length} invoices due for reminder (${daysThreshold}+ days)`);
+  console.log(
+    `✅ Found ${dueInvoices.length} invoices due for reminder (${daysThreshold}+ days)`,
+  );
   return dueInvoices;
 }
 
@@ -192,7 +203,7 @@ async function getAllProducts() {
 
   while (true) {
     const url = `https://public.kiotapi.com/products?pageSize=${pageSize}&currentItem=${currentItem}&includeInventory=false`;
-    
+
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -234,7 +245,7 @@ async function getOilProductIds() {
     .select("product_id");
 
   if (!selectError && existing && existing.length > 0) {
-    const productIds = existing.map(p => p.product_id);
+    const productIds = existing.map((p) => p.product_id);
     console.log(`✅ Loaded ${productIds.length} oil product IDs from Supabase`);
     return productIds;
   }
@@ -242,17 +253,17 @@ async function getOilProductIds() {
   // Nếu chưa có, fetch từ API
   console.log("🛢️  Fetching oil products from API...");
   const allProducts = await getAllProducts();
-  
+
   // Lọc sản phẩm có category chứa "nhớt" (case insensitive)
-  const oilProducts = allProducts.filter(p => 
-    p.categoryName && p.categoryName.toLowerCase().includes("nhớt")
+  const oilProducts = allProducts.filter(
+    (p) => p.categoryName && p.categoryName.toLowerCase().includes("nhớt"),
   );
-  
+
   // Lưu vào Supabase
-  const oilData = oilProducts.map(p => ({
+  const oilData = oilProducts.map((p) => ({
     product_id: p.id,
     product_name: p.name,
-    category_name: p.categoryName
+    category_name: p.categoryName,
   }));
 
   const { error: insertError } = await supabase
@@ -264,10 +275,10 @@ async function getOilProductIds() {
   } else {
     console.log(`💾 Saved ${oilData.length} oil products to Supabase`);
   }
-  
-  const productIds = oilProducts.map(p => p.id);
+
+  const productIds = oilProducts.map((p) => p.id);
   console.log(`✅ Found ${productIds.length} oil products`);
-  
+
   return productIds;
 }
 
@@ -278,9 +289,9 @@ function isOilInvoice(invoice, oilProductIds) {
   if (!invoice.invoiceDetails || invoice.invoiceDetails.length === 0) {
     return false;
   }
-  
-  return invoice.invoiceDetails.some(item => 
-    oilProductIds.includes(item.productId)
+
+  return invoice.invoiceDetails.some((item) =>
+    oilProductIds.includes(item.productId),
   );
 }
 
@@ -288,9 +299,13 @@ function isOilInvoice(invoice, oilProductIds) {
  * Lọc chỉ lấy hoá đơn thay nhớt
  */
 function filterOilInvoices(invoices, oilProductIds) {
-  return invoices.filter(inv => isOilInvoice(inv, oilProductIds));
+  return invoices.filter((inv) => isOilInvoice(inv, oilProductIds));
 }
 async function getCustomerPhone(customerId) {
+  if (!customerId) {
+    return null;
+  }
+
   const fetch = await getFetch();
   try {
     const response = await fetch(
@@ -302,7 +317,7 @@ async function getCustomerPhone(customerId) {
           Retailer: RETAILER,
           Accept: "application/json",
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -311,7 +326,15 @@ async function getCustomerPhone(customerId) {
     }
 
     const result = await response.json();
-    return result.data?.contactNumber || null;
+    const customer = result?.data || result || {};
+
+    return (
+      customer.contactNumber ||
+      customer.phone ||
+      customer.mobilePhone ||
+      customer.subNumber ||
+      null
+    );
   } catch (error) {
     console.error(`❌ Error getting customer ${customerId}:`, error.message);
     return null;
@@ -323,11 +346,11 @@ async function getCustomerPhone(customerId) {
  */
 async function sendZNSForInvoice(invoice, apiKey, templateId) {
   const fetch = await getFetch();
-  
+
   // CHỈ DÙNG TÊN KHÁCH HÀNG (không ghép sản phẩm nữa)
   // Vì template có giới hạn độ dài field "ten_khach_hang"
   const displayName = invoice.customerName;
-  
+
   const response = await fetch("https://api.yoursales.vn/api/public/zns/send", {
     method: "POST",
     headers: {
@@ -372,34 +395,38 @@ module.exports = {
 if (require.main === module) {
   (async () => {
     const lastSync = await getLastSyncTime();
-    console.log(`📋 Last sync: ${lastSync.toLocaleString('vi-VN')}`);
+    console.log(`📋 Last sync: ${lastSync.toLocaleString("vi-VN")}`);
     console.log(`📋 Fetching NEW/UPDATED invoices (incremental sync)...\n`);
-    
-    const invoices = await getAllInvoices({ 
+
+    const invoices = await getAllInvoices({
       pageSize: 100,
       useIncrementalSync: false, // Lấy tất cả để test
-      fromDate: new Date('2026-07-01')
+      fromDate: new Date("2026-07-01"),
     });
-    
+
     // Lấy danh sách nhớt
     console.log("\n🛢️  Loading oil product IDs...");
     const oilProductIds = await getOilProductIds();
-    
+
     // Lọc hoá đơn nhớt
     console.log("\n🛢️  Filtering oil invoices...");
     const oilInvoices = filterOilInvoices(invoices, oilProductIds);
-    console.log(`✅ Found ${oilInvoices.length} oil invoices (out of ${invoices.length} total)`);
-    
+    console.log(
+      `✅ Found ${oilInvoices.length} oil invoices (out of ${invoices.length} total)`,
+    );
+
     // Lọc đến hạn
     console.log("\n⏰ Filtering due invoices (30 days)...");
     const dueInvoices = filterInvoicesDue(oilInvoices, 30);
-    
+
     console.log("\n📊 RESULT:");
     dueInvoices.slice(0, 5).forEach((inv, i) => {
       console.log(`\n${i + 1}. ${inv.customerName} (${inv.customerCode})`);
       console.log(`   Invoice: ${inv.invoiceCode}`);
-      console.log(`   Purchase: ${inv.purchaseDate.toLocaleDateString('vi-VN')}`);
-      console.log(`   Due date: ${inv.dueDate.toLocaleDateString('vi-VN')}`);
+      console.log(
+        `   Purchase: ${inv.purchaseDate.toLocaleDateString("vi-VN")}`,
+      );
+      console.log(`   Due date: ${inv.dueDate.toLocaleDateString("vi-VN")}`);
       console.log(`   Days ago: ${inv.daysSince} days`);
       console.log(`   Products: ${inv.productNames}`);
     });
