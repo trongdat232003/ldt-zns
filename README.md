@@ -2,42 +2,40 @@
 
 Hệ thống tự động gửi tin nhắn ZNS nhắc khách hàng thay nhớt sau 30 ngày.
 
-## 🚀 Deploy trên Render.com
+## 🚀 Setup (3 bước)
 
-1. **Push code lên GitHub**
-2. **Vào Render.com → New → Web Service**
-3. **Connect GitHub repo này**
-4. **Cấu hình:**
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-   - **Environment Variables** (thêm tất cả từ `.env`):
-     ```
-     KIOTVIET_ACCESS_TOKEN=...
-     KIOTVIET_RETAILER=...
-     ZNS_API_KEY=...
-     ZNS_TEMPLATE_ID=499462
-     SUPABASE_URL=...
-     SUPABASE_KEY=...
-     API_SECRET=your-secret-key
-     DRY_RUN=false
-     PORT=3456
-     ```
-5. **Deploy**
+### 1. Push code lên GitHub
 
-## ⏰ Setup Cron Job
+```bash
+git add .
+git commit -m "Setup ZNS reminder system"
+git push
+```
 
-Sau khi deploy, copy URL của Render (VD: `https://your-app.onrender.com`)
+### 2. Thêm Secrets vào GitHub
 
-**Vào https://console.cron-job.org**:
-- **URL**: `https://your-app.onrender.com/run-daily`
-- **Method**: POST
-- **Headers**: `X-API-Secret: your-secret-key` (giống API_SECRET trong .env)
-- **Schedule**: Mỗi ngày 8:00 AM (múi giờ Việt Nam)
+Vào **GitHub repo → Settings → Secrets and variables → Actions → New repository secret**
 
-## 📊 Kiểm tra
+Thêm các secrets sau (copy từ file `.env`):
 
-- **Health check**: `GET https://your-app.onrender.com/`
-- **Trigger thủ công**: `POST https://your-app.onrender.com/run-daily` (với header `X-API-Secret`)
+- `KIOTVIET_ACCESS_TOKEN`
+- `KIOTVIET_RETAILER`
+- `ZNS_API_KEY`
+- `ZNS_TEMPLATE_ID` (giá trị: `499462`)
+- `SUPABASE_URL`
+- `SUPABASE_KEY`
+
+### 3. Xong!
+
+GitHub Actions sẽ tự động chạy **mỗi ngày lúc 8:00 sáng** (múi giờ Việt Nam).
+
+## 🧪 Test thủ công
+
+Vào **GitHub → Actions → Daily ZNS Reminder → Run workflow** để test ngay.
+
+## 📊 Kiểm tra logs
+
+Vào **GitHub → Actions → Daily ZNS Reminder** để xem log mỗi lần chạy.
 
 ## 🗄️ Database (Supabase)
 
@@ -50,17 +48,12 @@ Tất cả data lưu trên Supabase:
 
 ```bash
 npm install
-npm start
-```
-
-Hoặc chạy 1 lần:
-```bash
 npm run daily
 ```
 
 ## 📝 Flow
 
-1. **Mỗi ngày** (trigger bởi cron-job.org):
+1. **Mỗi ngày 8:00 AM** (tự động bởi GitHub Actions):
    - Fetch hoá đơn mới từ KiotViet (incremental sync)
    - Lọc hoá đơn thay nhớt
    - Tạo reminders (ngày mua + 30 ngày)
@@ -73,6 +66,7 @@ npm run daily
 
 ## ⚠️ Lưu ý
 
-- File `.env` KHÔNG được commit lên GitHub
-- Đổi `API_SECRET` thành giá trị bảo mật
-- Set `DRY_RUN=false` khi chạy production
+- File `.env` KHÔNG được commit lên GitHub (đã có trong `.gitignore`)
+- Tất cả secrets lưu an toàn trên GitHub Actions
+- **FREE 100%** - GitHub Actions miễn phí cho public repos
+
