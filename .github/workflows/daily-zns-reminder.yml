@@ -37,4 +37,5 @@ jobs:
           MINUTES_BETWEEN_REMINDERS: ${{ secrets.MINUTES_BETWEEN_REMINDERS }}
           MAX_SEND_PER_RUN: ${{ secrets.MAX_SEND_PER_RUN }}
           DRY_RUN: ${{ secrets.DRY_RUN }}
+          USE_MOCK_DATA: ${{ secrets.USE_MOCK_DATA }}
         run: node runDaily.js

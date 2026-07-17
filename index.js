@@ -22,6 +22,10 @@ const {
   loadOilProductIds,
   filterOilChangeInvoices,
 } = require("./matchOilInvoices");
+const {
+  createMockInvoices,
+  getMockCustomerPhone,
+} = require("./mockData");
 
 // ============================================================================
 // CẤU HÌNH - Thay đổi ở đây
@@ -41,6 +45,9 @@ const CONFIG = {
   
   // DRY RUN MODE: true = không gửi thật, false = gửi thật
   DRY_RUN: process.env.DRY_RUN === "true",
+  
+  // MOCK DATA MODE: true = dùng dữ liệu giả, false = dùng dữ liệu thật từ KiotViet
+  USE_MOCK_DATA: process.env.USE_MOCK_DATA === "true",
 };
 
 // ============================================================================
@@ -51,14 +58,25 @@ async function runAutoReminder(config = CONFIG) {
   console.log("🚀 ZNS AUTO REMINDER - STARTING...\n");
   
   // ========================================================================
-  // DRY RUN MODE
+  // DRY RUN MODE & MOCK DATA MODE
   // ========================================================================
+  if (config.USE_MOCK_DATA) {
+    console.log("=" .repeat(70));
+    console.log("🎭 MOCK DATA MODE - DÙNG DỮ LIỆU GIẢ");
+    console.log("=" .repeat(70));
+    console.log("Chế độ này sẽ:");
+    console.log("  ❌ KHÔNG gọi API KiotViet");
+    console.log("  ✅ Dùng 5 hóa đơn giả (mockData.js)");
+    console.log("  ✅ SĐT test: 0362832045");
+    console.log("=" .repeat(70));
+    console.log("");
+  }
+  
   if (config.DRY_RUN) {
     console.log("=" .repeat(70));
     console.log("🧪 DRY RUN MODE - KHÔNG GỬI TIN THẬT");
     console.log("=" .repeat(70));
     console.log("Chế độ này sẽ:");
-    console.log("  ✅ Lấy dữ liệu THẬT từ KiotViet");
     console.log("  ✅ Lọc và xử lý như bình thường");
     console.log("  ❌ KHÔNG GỬI ZNS (chỉ hiển thị)");
     console.log("=" .repeat(70));
@@ -76,6 +94,7 @@ async function runAutoReminder(config = CONFIG) {
 
   console.log("=" .repeat(70));
   console.log("⚙️  CONFIG:");
+  console.log(`   Data: ${config.USE_MOCK_DATA ? '🎭 MOCK (Giả)' : '💾 REAL (Thật từ KiotViet)'}`);
   console.log(`   Mode: ${config.DRY_RUN ? '🧪 DRY RUN (Test)' : '🚀 PRODUCTION (Real)'}`);
   console.log(`   Minutes since purchase: ${config.MINUTES_SINCE_PURCHASE} (${Math.floor(config.MINUTES_SINCE_PURCHASE / 1440)} days)`);
   console.log(`   Minutes between reminders: ${config.MINUTES_BETWEEN_REMINDERS} (${Math.floor(config.MINUTES_BETWEEN_REMINDERS / 1440)} days)`);
@@ -102,13 +121,20 @@ async function runAutoReminder(config = CONFIG) {
     }
 
     // ========================================================================
-    // BƯỚC 1: Lấy tất cả hóa đơn từ KiotViet
+    // BƯỚC 1: Lấy tất cả hóa đơn (từ KiotViet hoặc Mock)
     // ========================================================================
-    console.log("\n📋 [1/7] Getting all invoices from KiotViet...");
+    console.log("\n📋 [1/7] Getting invoices...");
     const startTime = Date.now();
-    const allInvoices = await getAllInvoices({ pageSize: 100 });
-    const fetchTime = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`✅ Fetched ${allInvoices.length} invoices in ${fetchTime}s`);
+    
+    let allInvoices;
+    if (config.USE_MOCK_DATA) {
+      allInvoices = createMockInvoices();
+      console.log(`✅ Created ${allInvoices.length} mock invoices`);
+    } else {
+      allInvoices = await getAllInvoices({ pageSize: 100 });
+      const fetchTime = ((Date.now() - startTime) / 1000).toFixed(1);
+      console.log(`✅ Fetched ${allInvoices.length} invoices in ${fetchTime}s`);
+    }
 
     // ========================================================================
     // BƯỚC 2: Lọc hóa đơn đủ thời gian
@@ -181,7 +207,12 @@ async function runAutoReminder(config = CONFIG) {
 
       // Lấy số điện thoại
       console.log(`    📞 Getting phone number...`);
-      const phone = await getCustomerPhone(invoice.customerId);
+      let phone;
+      if (config.USE_MOCK_DATA) {
+        phone = await getMockCustomerPhone(invoice.customerId);
+      } else {
+        phone = await getCustomerPhone(invoice.customerId);
+      }
       
       if (!phone) {
         console.log(`    ⚠️  No phone number - SKIP`);
