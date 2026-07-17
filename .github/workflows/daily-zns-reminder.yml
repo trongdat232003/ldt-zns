@@ -2,8 +2,11 @@ name: ZNS Auto Reminder Daily
 
 on:
   schedule:
-    # Chạy lúc 17:00 UTC = 0h đêm VN (UTC+7)
-    - cron: '0 17 * * *'
+    # TEST: Chạy mỗi 10 phút
+    - cron: '*/10 * * * *'
+    
+    # PRODUCTION: Chạy lúc 17:00 UTC = 0h đêm VN (UTC+7)
+    # - cron: '0 17 * * *'
   
   # Cho phép chạy thủ công để test
   workflow_dispatch:
