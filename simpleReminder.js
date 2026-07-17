@@ -144,28 +144,9 @@ async function getCustomerPhone(customerId) {
 async function sendZNSForInvoice(invoice, apiKey, templateId) {
   const fetch = await getFetch();
   
-  // HACK: Ghép tên sản phẩm vào tên khách hàng
-  let displayName = invoice.customerName;
-  
-  if (invoice.productNames) {
-    // Giới hạn tổng độ dài: <= 50 ký tự cho an toàn
-    const maxLength = 50;
-    const nameLength = invoice.customerName.length;
-    const availableForProduct = maxLength - nameLength - 5; // -5 cho "\n📦 "
-    
-    let productText = invoice.productNames;
-    if (availableForProduct > 0 && productText.length > availableForProduct) {
-      productText = productText.substring(0, availableForProduct - 3) + "...";
-    } else if (availableForProduct <= 0) {
-      // Tên khách hàng quá dài, chỉ dùng tên không thêm sản phẩm
-      displayName = invoice.customerName.substring(0, maxLength - 3) + "...";
-      productText = "";
-    }
-    
-    if (productText) {
-      displayName = `${invoice.customerName}\n📦 ${productText}`;
-    }
-  }
+  // CHỈ DÙNG TÊN KHÁCH HÀNG (không ghép sản phẩm nữa)
+  // Vì template có giới hạn độ dài field "ten_khach_hang"
+  const displayName = invoice.customerName;
   
   const response = await fetch("https://api.yoursales.vn/api/public/zns/send", {
     method: "POST",
@@ -178,7 +159,7 @@ async function sendZNSForInvoice(invoice, apiKey, templateId) {
       template_id: templateId,
       phone: invoice.phone,
       data: {
-        ten_khach_hang: displayName, // HACK: Tên + Sản phẩm
+        ten_khach_hang: displayName, // CHỈ TÊN KHÁCH HÀNG
         ma_khach_hang: invoice.customerCode,
       },
       tracking_id: `${invoice.invoiceId}_${Date.now()}`,
