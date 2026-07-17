@@ -148,11 +148,16 @@ async function sendZNSForInvoice(invoice, apiKey, templateId) {
   let displayName = invoice.customerName;
   
   if (invoice.productNames) {
-    // Rút gọn tên sản phẩm nếu quá dài
+    // Giới hạn tổng độ dài: Tên khách hàng + sản phẩm <= 100 ký tự
+    const maxLength = 100;
+    const nameLength = invoice.customerName.length;
+    const availableForProduct = maxLength - nameLength - 5; // -5 cho "\n📦 "
+    
     let productText = invoice.productNames;
-    if (productText.length > 50) {
-      productText = productText.substring(0, 47) + "...";
+    if (productText.length > availableForProduct) {
+      productText = productText.substring(0, availableForProduct - 3) + "...";
     }
+    
     displayName = `${invoice.customerName}\n📦 ${productText}`;
   }
   

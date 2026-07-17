@@ -2,11 +2,11 @@ name: ZNS Auto Reminder Daily
 
 on:
   schedule:
-    # TEST: Chạy mỗi 10 phút
-    - cron: '*/10 * * * *'
-    
     # PRODUCTION: Chạy lúc 17:00 UTC = 0h đêm VN (UTC+7)
-    # - cron: '0 17 * * *'
+    - cron: '0 17 * * *'
+    
+    # TEST: Chạy mỗi 10 phút
+    # - cron: '*/10 * * * *'
   
   # Cho phép chạy thủ công để test
   workflow_dispatch:
@@ -27,8 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       
-      - name: Clean log (for testing)
-        run: rm -f simple_reminder_log.json
+      # Clean log for testing only - REMOVE IN PRODUCTION
+      # - name: Clean log (for testing)
+      #   run: rm -f simple_reminder_log.json
       
       - name: Run ZNS Auto Reminder
         env:
