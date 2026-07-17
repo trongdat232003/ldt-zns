@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       
+      - name: Clean log (for testing)
+        run: rm -f simple_reminder_log.json
+      
       - name: Run ZNS Auto Reminder
         env:
           ZNS_API_KEY: ${{ secrets.ZNS_API_KEY }}
