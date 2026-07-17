@@ -2,14 +2,23 @@ name: ZNS Auto Reminder Daily
 
 on:
   schedule:
-    # TEST: Chạy mỗi 5 phút (GitHub không cho phép < 5 phút)
+    # 🧪 TEST MODE: Chạy mỗi 5 phút (GitHub Actions minimum)
     - cron: '*/5 * * * *'
     
-    # PRODUCTION: Chạy lúc 17:00 UTC = 0h đêm VN (UTC+7)
-    # - cron: '0 17 * * *'
+    # 🚀 PRODUCTION: Chạy lúc 2:00 AM UTC = 9:00 AM VN (UTC+7)
+    # Khi chuyển production: comment dòng trên, uncomment dòng dưới
+    # - cron: '0 2 * * *'
   
-  # Cho phép chạy thủ công để test
+  # Cho phép chạy thủ công
   workflow_dispatch:
+
+  # Push trigger để giữ workflow active
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.github/workflows/daily-zns-reminder.yml'
 
 jobs:
   send-zns-reminders:
