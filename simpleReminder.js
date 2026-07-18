@@ -38,14 +38,23 @@ async function getLastSyncTime() {
 }
 
 /**
- * Lưu thời điểm sync vào Supabase
+ * Format Date sang giờ Việt Nam (GMT+7)
+ */
+function toVNTimeString(date) {
+  const vnOffset = 7 * 60 * 60 * 1000;
+  const vnDate = new Date(date.getTime() + vnOffset);
+  return vnDate.toISOString().replace("Z", "+07:00");
+}
+
+/**
+ * Lưu thời điểm sync vào Supabase (giờ VN)
  */
 async function saveLastSyncTime(time) {
   const { error } = await supabase
     .from("sync_state")
     .update({
-      last_sync_time: time.toISOString(),
-      updated_at: new Date().toISOString(),
+      last_sync_time: toVNTimeString(time),
+      updated_at: toVNTimeString(new Date()),
     })
     .eq("id", 1);
 
