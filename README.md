@@ -18,7 +18,8 @@ Vào **GitHub repo → Settings → Secrets and variables → Actions → New re
 
 Thêm các secrets sau (copy từ file `.env`):
 
-- `KIOTVIET_ACCESS_TOKEN`
+- `KIOTVIET_CLIENT_ID`
+- `KIOTVIET_CLIENT_SECRET`
 - `KIOTVIET_RETAILER`
 - `ZNS_API_KEY`
 - `ZNS_TEMPLATE_ID` (giá trị: `499462`)

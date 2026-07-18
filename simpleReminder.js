@@ -4,9 +4,9 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const supabase = require("./lib/supabaseClient");
+const { getAccessToken } = require("./lib/kiotvietAuth");
 
 // Đọc từ environment variables
-const ACCESS_TOKEN = (process.env.KIOTVIET_ACCESS_TOKEN || "").trim();
 const RETAILER = (process.env.KIOTVIET_RETAILER || "").trim();
 
 // Dynamic import for node-fetch (ESM module)
@@ -84,6 +84,7 @@ async function getAllInvoices({
     fromDate = new Date("2026-07-01T00:00:00");
   }
   const fetch = await getFetch();
+  const accessToken = await getAccessToken();
   const allInvoices = [];
   let currentItem = 0;
 
@@ -103,7 +104,7 @@ async function getAllInvoices({
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        Authorization: `Bearer ${accessToken}`,
         Retailer: RETAILER,
         Accept: "application/json",
       },
@@ -179,10 +180,10 @@ function filterInvoicesDue(invoices, daysThreshold = 30) {
         // Lấy sản phẩm để hiển thị
         products: invoice.invoiceDetails
           ? invoice.invoiceDetails.slice(0, 3).map((item) => ({
-              name: item.productName,
-              quantity: item.quantity,
-              price: item.price,
-            }))
+            name: item.productName,
+            quantity: item.quantity,
+            price: item.price,
+          }))
           : [],
       });
     }
@@ -204,6 +205,7 @@ function filterInvoicesDue(invoices, daysThreshold = 30) {
  */
 async function getAllProducts() {
   const fetch = await getFetch();
+  const accessToken = await getAccessToken();
   const allProducts = [];
   let currentItem = 0;
   const pageSize = 100;
@@ -216,7 +218,7 @@ async function getAllProducts() {
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        Authorization: `Bearer ${accessToken}`,
         Retailer: RETAILER,
         Accept: "application/json",
       },
@@ -316,13 +318,14 @@ async function getCustomerPhone(customerId) {
   }
 
   const fetch = await getFetch();
+  const accessToken = await getAccessToken();
   try {
     const response = await fetch(
       `https://public.kiotapi.com/customers/${customerId}`,
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          Authorization: `Bearer ${accessToken}`,
           Retailer: RETAILER,
           Accept: "application/json",
         },
