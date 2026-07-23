@@ -1,10 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Send, 
   Clock, 
   AlertTriangle, 
   CheckCircle2, 
-  TrendingUp,
   Calendar,
   Users,
   Loader2
@@ -14,6 +14,7 @@ import { StatusBadge } from '../components/common/StatusBadge';
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { stats, recentReminders, loading, error } = useDashboard();
 
   const statCards = [
@@ -100,8 +101,8 @@ const Dashboard = () => {
       <div className="dashboard-content">
         <div className="recent-card glass-card">
           <div className="card-header">
-            <h3><Calendar size={18} /> Giao dịch gần đây</h3>
-            <button className="btn-text">Xem tất cả</button>
+            <h3><Calendar size={18} /> Nhắc nhở gần đây</h3>
+            <button className="btn-text" onClick={() => navigate('/reminders')}>Xem tất cả</button>
           </div>
           
           <div className="recent-list">
@@ -113,9 +114,6 @@ const Dashboard = () => {
               recentReminders.map((reminder, idx) => (
                 <div key={reminder.id} className="recent-item" style={{ animationDelay: `${idx * 0.05}s` }}>
                   <div className="recent-item-info">
-                    <div className="recent-avatar">
-                      {reminder.customer_name?.charAt(0) || 'K'}
-                    </div>
                     <div>
                       <h4>{reminder.customer_name}</h4>
                       <p>{reminder.invoice_code} • {reminder.phone}</p>
@@ -130,37 +128,6 @@ const Dashboard = () => {
                 </div>
               ))
             )}
-          </div>
-        </div>
-
-        <div className="chart-card glass-card">
-          <div className="card-header">
-            <h3><TrendingUp size={18} /> Hiệu suất gửi tin</h3>
-          </div>
-          <div className="chart-placeholder">
-            <div className="performance-circle">
-              <span className="percentage">
-                {stats.totalReminders > 0 
-                  ? Math.round((stats.sentToday / stats.totalReminders) * 100) 
-                  : 0}%
-              </span>
-              <span className="label">Tỷ lệ thành công hôm nay</span>
-            </div>
-            
-            <div className="performance-stats">
-              <div className="perf-item">
-                <div className="perf-dot" style={{ background: 'var(--success)' }}></div>
-                <span>Thành công ({stats.sentToday})</span>
-              </div>
-              <div className="perf-item">
-                <div className="perf-dot" style={{ background: 'var(--warning)' }}></div>
-                <span>Chờ gửi ({stats.pending})</span>
-              </div>
-              <div className="perf-item">
-                <div className="perf-dot" style={{ background: 'var(--danger)' }}></div>
-                <span>Lỗi ({stats.failed})</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

@@ -92,7 +92,8 @@
 
 .product-id {
   font-size: 0.7rem;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-sans);
+  font-weight: 500;
   color: var(--accent-primary);
   opacity: 0.7;
 }
