@@ -50,11 +50,8 @@ const Dashboard = () => {
         .eq('sent', false)
         .lte('due_date', today);
 
-      // Failed (has error)
-      const { count: failed } = await supabase
-        .from('reminders')
-        .select('*', { count: 'exact', head: true })
-        .not('error', 'is', null);
+      // Failed (has error) - set 0 as error column does not exist in table
+      const failed = 0;
 
       setStats({
         totalReminders: totalReminders || 0,

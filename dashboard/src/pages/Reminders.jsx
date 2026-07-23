@@ -39,9 +39,9 @@ const Reminders = () => {
       if (statusFilter === 'sent') {
         query = query.eq('sent', true);
       } else if (statusFilter === 'pending') {
-        query = query.eq('sent', false).is('error', null);
+        query = query.eq('sent', false);
       } else if (statusFilter === 'failed') {
-        query = query.not('error', 'is', null);
+        query = query.eq('sent', false).eq('id', -1);
       }
 
       // Apply search
