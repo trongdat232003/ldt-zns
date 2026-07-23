@@ -27,5 +27,5 @@ app.get('/api/products', authMiddleware, async (req, res) => {
 
 const PORT = env.PORT || 3456;
 app.listen(PORT, () => {
-  logger.info(`🚀 ZNS API Server running on port ${PORT}`);
+  logger.info(`ZNS API Server running on port ${PORT}`);
 });

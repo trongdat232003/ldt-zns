@@ -2,7 +2,7 @@ import { apiRequest } from '../lib/apiClient';
 
 export async function getUsers() {
   try {
-    const data = await apiRequest('/api/users');
+    const data = await apiRequest('/users');
     return { data, error: null };
   } catch (error) {
     return { data: null, error };
@@ -11,7 +11,7 @@ export async function getUsers() {
 
 export async function createUser(userData) {
   try {
-    const data = await apiRequest('/api/users', {
+    const data = await apiRequest('/users', {
       method: 'POST',
       body: userData
     });
@@ -23,7 +23,7 @@ export async function createUser(userData) {
 
 export async function updatePassword(id, password) {
   try {
-    const data = await apiRequest(`/api/users/${id}/password`, {
+    const data = await apiRequest(`/users/${id}/password`, {
       method: 'PUT',
       body: { password }
     });
@@ -35,7 +35,7 @@ export async function updatePassword(id, password) {
 
 export async function updateRole(id, role) {
   try {
-    const data = await apiRequest(`/api/users/${id}/role`, {
+    const data = await apiRequest(`/users/${id}/role`, {
       method: 'PUT',
       body: { role }
     });
@@ -47,7 +47,7 @@ export async function updateRole(id, role) {
 
 export async function deleteUser(id) {
   try {
-    const data = await apiRequest(`/api/users/${id}`, {
+    const data = await apiRequest(`/users/${id}`, {
       method: 'DELETE'
     });
     return { data, error: null };
