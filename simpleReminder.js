@@ -249,19 +249,21 @@ async function getAllProducts() {
 /**
  * Lọc sản phẩm nhớt và lưu vào Supabase
  */
-async function getOilProductIds() {
-  // Check Supabase trước
-  const { data: existing, error: selectError } = await supabase
-    .from("oil_products")
-    .select("product_id");
+async function getOilProductIds(forceFetch = false) {
+  if (!forceFetch) {
+    // Check Supabase trước
+    const { data: existing, error: selectError } = await supabase
+      .from("oil_products")
+      .select("product_id");
 
-  if (!selectError && existing && existing.length > 0) {
-    const productIds = existing.map((p) => p.product_id);
-    console.log(`✅ Loaded ${productIds.length} oil product IDs from Supabase`);
-    return productIds;
+    if (!selectError && existing && existing.length > 0) {
+      const productIds = existing.map((p) => p.product_id);
+      console.log(`✅ Loaded ${productIds.length} oil product IDs from Supabase`);
+      return productIds;
+    }
   }
 
-  // Nếu chưa có, fetch từ API
+  // Nếu chưa có hoặc bắt buộc, fetch từ API
   console.log("🛢️  Fetching oil products from API...");
   const allProducts = await getAllProducts();
 
