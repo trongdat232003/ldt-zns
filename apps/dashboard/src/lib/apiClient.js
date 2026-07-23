@@ -1,7 +1,10 @@
 import { supabase } from './supabase';
 
-// In local development, VITE_API_URL could be set. Otherwise fallback to current origin or specific url
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3456';
+// In production, use relative URL (same origin)
+// In local development, use explicit localhost
+const BASE_URL = import.meta.env.DEV 
+  ? 'http://localhost:3456' 
+  : ''; // Empty string = same origin
 const API_PREFIX = '/api';
 
 export async function apiRequest(path, { method = 'GET', body } = {}) {
