@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import React, { useState } from 'react';
 import {
   Package,
   Loader2,
@@ -8,55 +7,26 @@ import {
   Search
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { useProducts } from '../hooks/useProducts';
+import { useToast } from '../contexts/ToastContext';
 import './Products.css';
 
 const Products = () => {
   const [searchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') === 'other' ? 'other' : 'oil';
   
-  const [products, setProducts] = useState([]);
-  const [otherProducts, setOtherProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingOther, setLoadingOther] = useState(false);
+  const { products, loading, error, refetch, addProduct, deleteProduct } = useProducts();
+  const toast = useToast();
+  
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
-    if (activeTab === 'other' && otherProducts.length === 0) {
-      fetchOtherProducts();
-    }
-  }, [activeTab]);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('oil_products')
-        .select('*')
-        .order('product_name', { ascending: true });
-
-      if (error) throw error;
-      setProducts(data || []);
-    } catch (err) {
-      console.error('Error fetching products:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchOtherProducts = async () => {
-    // Chưa cần fetch sản phẩm khác
-    setOtherProducts([]);
-  };
+  // Currently we only handle "oil" products since fetchOtherProducts was empty
+  const otherProducts = [];
+  const loadingOther = false;
 
   const handleRefresh = () => {
     if (activeTab === 'oil') {
-      fetchProducts();
-    } else {
-      fetchOtherProducts();
+      refetch();
     }
   };
 
@@ -65,40 +35,20 @@ const Products = () => {
       return;
     }
 
-    try {
-      const { error } = await supabase
-        .from('oil_products')
-        .delete()
-        .eq('product_id', productId);
-
-      if (error) throw error;
-      setProducts(products.filter(p => p.product_id !== productId));
-    } catch (err) {
-      console.error('Error deleting product:', err);
-      alert('Lỗi khi xoá sản phẩm: ' + err.message);
+    const { error } = await deleteProduct(productId);
+    if (error) {
+      toast.error('Lỗi khi xoá sản phẩm: ' + error.message);
+    } else {
+      toast.success('Đã xoá sản phẩm thành công.');
     }
   };
 
   const handleAddOil = async (product) => {
-    try {
-      const { error } = await supabase
-        .from('oil_products')
-        .upsert({
-          product_id: product.product_id,
-          product_name: product.product_name,
-          category_name: product.category_name
-        }, { onConflict: 'product_id' });
-
-      if (error) throw error;
-      
-      alert(`Đã thêm "${product.product_name}" vào danh sách nhớt!`);
-      // Update local state
-      setProducts([...products, product].sort((a, b) => a.product_name.localeCompare(b.product_name)));
-      setOtherProducts(otherProducts.filter(p => p.product_id !== product.product_id));
-      
-    } catch (err) {
-      console.error('Error adding oil product:', err);
-      alert('Lỗi khi thêm: ' + err.message);
+    const { error } = await addProduct(product);
+    if (error) {
+      toast.error('Lỗi khi thêm sản phẩm: ' + error.message);
+    } else {
+      toast.success(`Đã thêm "${product.product_name}" vào danh sách nhớt!`);
     }
   };
 
@@ -134,6 +84,12 @@ const Products = () => {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="alert alert-danger" style={{ marginBottom: '1rem', padding: '1rem', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px' }}>
+          Có lỗi xảy ra: {error.message}
+        </div>
+      )}
 
       <div className="products-grid">
         {(activeTab === 'oil' ? loading : loadingOther) ? (

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import React from 'react';
 import { 
   Send, 
   Clock, 
@@ -10,70 +9,12 @@ import {
   Users,
   Loader2
 } from 'lucide-react';
+import { useDashboard } from '../hooks/useDashboard';
+import { StatusBadge } from '../components/common/StatusBadge';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const [stats, setStats] = useState({
-    totalReminders: 0,
-    sentToday: 0,
-    pending: 0,
-    failed: 0,
-  });
-  const [recentReminders, setRecentReminders] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      const today = new Date().toISOString().split('T')[0];
-
-      // Total reminders
-      const { count: totalReminders } = await supabase
-        .from('reminders')
-        .select('*', { count: 'exact', head: true });
-
-      // Sent today
-      const { count: sentToday } = await supabase
-        .from('reminders')
-        .select('*', { count: 'exact', head: true })
-        .eq('sent', true)
-        .gte('sent_at', `${today}T00:00:00`);
-
-      // Pending (not sent, due today or before)
-      const { count: pending } = await supabase
-        .from('reminders')
-        .select('*', { count: 'exact', head: true })
-        .eq('sent', false)
-        .lte('due_date', today);
-
-      // Failed (has error) - set 0 as error column does not exist in table
-      const failed = 0;
-
-      setStats({
-        totalReminders: totalReminders || 0,
-        sentToday: sentToday || 0,
-        pending: pending || 0,
-        failed: failed || 0,
-      });
-
-      // Recent reminders
-      const { data: recent } = await supabase
-        .from('reminders')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(8);
-
-      setRecentReminders(recent || []);
-    } catch (err) {
-      console.error('Error fetching dashboard data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { stats, recentReminders, loading, error } = useDashboard();
 
   const statCards = [
     {
@@ -103,97 +44,124 @@ const Dashboard = () => {
       icon: <AlertTriangle size={22} />,
       color: 'var(--danger)',
       bgColor: 'rgba(239, 68, 68, 0.1)',
-    },
+    }
   ];
 
   if (loading) {
     return (
-      <div className="loading-container">
+      <div className="dashboard-loading">
         <Loader2 size={40} className="animate-spin" />
-        <p>Đang tải dữ liệu...</p>
+        <p>Đang tải dữ liệu tổng quan...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-page">
+        <div className="alert alert-danger" style={{ padding: '1rem', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px' }}>
+          Có lỗi xảy ra khi tải dữ liệu: {error.message || error}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="dashboard">
-      {/* Stat Cards */}
-      <div className="stat-cards">
-        {statCards.map((card, index) => (
-          <div
-            key={index}
+    <div className="dashboard-page animate-fade-in">
+      <div className="dashboard-header">
+        <div>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
+            Tổng quan hệ thống
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            Số liệu thống kê tự động cập nhật từ hệ thống KiotViet & ZNS
+          </p>
+        </div>
+      </div>
+
+      <div className="stats-grid">
+        {statCards.map((stat, idx) => (
+          <div 
+            key={idx} 
             className="stat-card glass-card"
-            style={{ animationDelay: `${index * 0.1}s` }}
+            style={{ animationDelay: `${idx * 0.1}s` }}
           >
-            <div className="stat-card-icon" style={{ backgroundColor: card.bgColor, color: card.color }}>
-              {card.icon}
+            <div className="stat-icon-wrapper" style={{ backgroundColor: stat.bgColor, color: stat.color }}>
+              {stat.icon}
             </div>
-            <div className="stat-card-info">
-              <span className="stat-value">{card.value.toLocaleString('vi-VN')}</span>
-              <span className="stat-label">{card.label}</span>
+            <div className="stat-info">
+              <span className="stat-label">{stat.label}</span>
+              <span className="stat-value">{stat.value}</span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Recent Reminders Table */}
-      <div className="section glass-card">
-        <div className="section-header">
-          <div className="section-title">
-            <Calendar size={20} />
-            <h2>Nhắc nhở gần đây</h2>
+      <div className="dashboard-content">
+        <div className="recent-card glass-card">
+          <div className="card-header">
+            <h3><Calendar size={18} /> Giao dịch gần đây</h3>
+            <button className="btn-text">Xem tất cả</button>
           </div>
-          <button className="btn btn-secondary" onClick={fetchDashboardData}>
-            <TrendingUp size={16} />
-            Làm mới
-          </button>
+          
+          <div className="recent-list">
+            {recentReminders.length === 0 ? (
+              <div className="empty-state">
+                Chưa có dữ liệu giao dịch
+              </div>
+            ) : (
+              recentReminders.map((reminder, idx) => (
+                <div key={reminder.id} className="recent-item" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  <div className="recent-item-info">
+                    <div className="recent-avatar">
+                      {reminder.customer_name?.charAt(0) || 'K'}
+                    </div>
+                    <div>
+                      <h4>{reminder.customer_name}</h4>
+                      <p>{reminder.invoice_code} • {reminder.phone}</p>
+                    </div>
+                  </div>
+                  <div className="recent-item-status">
+                    <span className="date-text">
+                      {reminder.purchase_date ? new Date(reminder.purchase_date).toLocaleDateString('vi-VN') : ''}
+                    </span>
+                    <StatusBadge sent={reminder.sent} error={reminder.error} />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
-        
-        <div className="table-wrapper">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Mã hoá đơn</th>
-                <th>Khách hàng</th>
-                <th>Ngày mua</th>
-                <th>Ngày nhắc</th>
-                <th>Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentReminders.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="empty-row">
-                    Chưa có dữ liệu nhắc nhở
-                  </td>
-                </tr>
-              ) : (
-                recentReminders.map((r) => (
-                  <tr key={r.id || r.invoice_code}>
-                    <td className="code-cell">{r.invoice_code}</td>
-                    <td>{r.customer_name}</td>
-                    <td>{r.purchase_date ? new Date(r.purchase_date).toLocaleDateString('vi-VN') : '—'}</td>
-                    <td>{r.due_date ? new Date(r.due_date).toLocaleDateString('vi-VN') : '—'}</td>
-                    <td>
-                      {r.sent ? (
-                        <span className="badge badge-success">
-                          <CheckCircle2 size={12} /> Đã gửi
-                        </span>
-                      ) : r.error ? (
-                        <span className="badge badge-danger">
-                          <AlertTriangle size={12} /> Lỗi
-                        </span>
-                      ) : (
-                        <span className="badge badge-warning">
-                          <Clock size={12} /> Chờ gửi
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+
+        <div className="chart-card glass-card">
+          <div className="card-header">
+            <h3><TrendingUp size={18} /> Hiệu suất gửi tin</h3>
+          </div>
+          <div className="chart-placeholder">
+            <div className="performance-circle">
+              <span className="percentage">
+                {stats.totalReminders > 0 
+                  ? Math.round((stats.sentToday / stats.totalReminders) * 100) 
+                  : 0}%
+              </span>
+              <span className="label">Tỷ lệ thành công hôm nay</span>
+            </div>
+            
+            <div className="performance-stats">
+              <div className="perf-item">
+                <div className="perf-dot" style={{ background: 'var(--success)' }}></div>
+                <span>Thành công ({stats.sentToday})</span>
+              </div>
+              <div className="perf-item">
+                <div className="perf-dot" style={{ background: 'var(--warning)' }}></div>
+                <span>Chờ gửi ({stats.pending})</span>
+              </div>
+              <div className="perf-item">
+                <div className="perf-dot" style={{ background: 'var(--danger)' }}></div>
+                <span>Lỗi ({stats.failed})</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

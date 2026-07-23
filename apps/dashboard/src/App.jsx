@@ -52,13 +52,17 @@ function AppRoutes() {
   );
 }
 
+import { ToastProvider } from './contexts/ToastContext';
+
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 

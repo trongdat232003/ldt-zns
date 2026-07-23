@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import React, { useState } from 'react';
 import {
   Users as UsersIcon,
   Loader2,
   RefreshCw,
   Trash2,
   UserPlus,
-  KeyRound,
-  Shield
+  KeyRound
 } from 'lucide-react';
+import { useUsers } from '../hooks/useUsers';
+import { useToast } from '../contexts/ToastContext';
 import './Users.css';
 
 const Users = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { users, loading, error, refetch, createUser, updatePassword, updateRole, deleteUser } = useUsers();
+  const toast = useToast();
 
   // Form states
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -27,71 +26,22 @@ const Users = () => {
 
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const getApiHeaders = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Not authenticated');
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`
-    };
-  };
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const headers = await getApiHeaders();
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3456/api';
-      const res = await fetch(`${apiUrl}/users`, { headers });
-      
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Lỗi khi tải danh sách người dùng');
-      }
-      
-      const data = await res.json();
-      setUsers(data);
-    } catch (err) {
-      console.error('Error fetching users:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleCreateUser = async (e) => {
     e.preventDefault();
     if (!newEmail || !newPassword) return;
     
-    try {
-      setSaving(true);
-      const headers = await getApiHeaders();
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3456/api';
-      const res = await fetch(`${apiUrl}/users`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ email: newEmail, password: newPassword, role: newRole })
-      });
-      
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Lỗi tạo người dùng');
-      }
-      
+    setSaving(true);
+    const { error } = await createUser({ email: newEmail, password: newPassword, role: newRole });
+    setSaving(false);
+    
+    if (error) {
+      toast.error(error.message);
+    } else {
       setShowCreateForm(false);
       setNewEmail('');
       setNewPassword('');
       setNewRole('staff');
-      fetchUsers();
-      alert('Tạo người dùng thành công!');
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setSaving(false);
+      toast.success('Tạo người dùng thành công!');
     }
   };
 
@@ -99,49 +49,25 @@ const Users = () => {
     e.preventDefault();
     if (!resetPassword || !resetUserId) return;
     
-    try {
-      setSaving(true);
-      const headers = await getApiHeaders();
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3456/api';
-      const res = await fetch(`${apiUrl}/users/${resetUserId}/password`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({ password: resetPassword })
-      });
-      
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Lỗi đổi mật khẩu');
-      }
-      
+    setSaving(true);
+    const { error } = await updatePassword(resetUserId, resetPassword);
+    setSaving(false);
+    
+    if (error) {
+      toast.error(error.message);
+    } else {
       setResetUserId(null);
       setResetPassword('');
-      alert('Đổi mật khẩu thành công!');
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setSaving(false);
+      toast.success('Đổi mật khẩu thành công!');
     }
   };
 
   const handleUpdateRole = async (userId, role) => {
-    try {
-      const headers = await getApiHeaders();
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3456/api';
-      const res = await fetch(`${apiUrl}/users/${userId}/role`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({ role })
-      });
-      
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Lỗi đổi role');
-      }
-      
-      fetchUsers();
-    } catch (err) {
-      alert(err.message);
+    const { error } = await updateRole(userId, role);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Cập nhật quyền thành công!');
     }
   };
 
@@ -150,22 +76,11 @@ const Users = () => {
       return;
     }
 
-    try {
-      const headers = await getApiHeaders();
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3456/api';
-      const res = await fetch(`${apiUrl}/users/${userId}`, {
-        method: 'DELETE',
-        headers
-      });
-      
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Lỗi xoá người dùng');
-      }
-      
-      fetchUsers();
-    } catch (err) {
-      alert(err.message);
+    const { error } = await deleteUser(userId);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Xoá người dùng thành công!');
     }
   };
 
@@ -182,7 +97,7 @@ const Users = () => {
             <UserPlus size={16} />
             {showCreateForm ? 'Huỷ tạo mới' : 'Tạo người dùng'}
           </button>
-          <button className="btn btn-secondary" onClick={fetchUsers}>
+          <button className="btn btn-secondary" onClick={refetch}>
             <RefreshCw size={16} />
             Làm mới
           </button>
@@ -257,8 +172,8 @@ const Users = () => {
       )}
 
       {error && (
-        <div className="alert-error glass-card">
-          {error}
+        <div className="alert alert-danger" style={{ marginBottom: '1rem', padding: '1rem', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px' }}>
+          Có lỗi xảy ra: {error.message || error}
         </div>
       )}
 
@@ -302,14 +217,13 @@ const Users = () => {
                         onClick={() => {
                           setResetUserId(u.id);
                           setResetPassword('');
-                          setShowCreateForm(false);
                         }}
                       >
                         <KeyRound size={16} />
                       </button>
                       <button 
                         className="btn-icon-danger" 
-                        title="Xoá user"
+                        title="Xoá người dùng"
                         onClick={() => handleDeleteUser(u.id, u.email)}
                       >
                         <Trash2 size={16} />
