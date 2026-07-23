@@ -1,0 +1,11 @@
+1. Chạy Worker (Gửi tin nhắn ZNS & Lấy hóa đơn)
+
+npm run worker:run
+
+2. Chạy Frontend (Dashboard)
+
+npm run dev --workspace=apps/dashboard
+
+3. Chạy Backend (API Server)
+
+npm start --workspace=apps/api

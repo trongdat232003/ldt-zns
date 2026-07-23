@@ -1,0 +1,14 @@
+{
+  "name": "@zns-auto/db",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    "./client": "./src/client.js",
+    "./reminderRepository": "./src/reminderRepository.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.7",
+    "@zns-auto/shared": "*"
+  }
+}

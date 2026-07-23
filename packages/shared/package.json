@@ -1,0 +1,11 @@
+{
+  "name": "@zns-auto/shared",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    "./config": "./src/config.js",
+    "./logger": "./src/logger.js",
+    "./schemas": "./src/schemas.js"
+  }
+}

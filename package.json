@@ -3,20 +3,25 @@
   "version": "1.0.0",
   "description": "",
   "main": "test-zns.js",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "daily": "node reminderScheduler.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "node --test packages/**/src/*.test.js",
+    "worker:run": "npm start --workspace=apps/worker"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "@supabase/supabase-js": "^2.110.7",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "node-fetch": "^2.7.0",
-    "ws": "^8.21.1"
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8",
+    "pino": "^9.2.0",
+    "pino-pretty": "^11.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.6.0",
+    "prettier": "^3.3.2"
   }
 }

@@ -1,0 +1,14 @@
+{
+  "name": "@zns-auto/integrations",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    "./kiotviet/authClient": "./src/kiotviet/authClient.js",
+    "./kiotviet/invoiceClient": "./src/kiotviet/invoiceClient.js",
+    "./zns/znsClient": "./src/zns/znsClient.js"
+  },
+  "dependencies": {
+    "@zns-auto/shared": "*"
+  }
+}
