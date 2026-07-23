@@ -4,6 +4,10 @@
   "description": "",
   "main": "test-zns.js",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
