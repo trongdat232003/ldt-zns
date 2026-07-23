@@ -7,7 +7,15 @@ import { env } from '@zns-auto/shared/config';
 import { ReminderRepository } from '@zns-auto/db/reminderRepository';
 
 const app = express();
-app.use(cors());
+
+// CORS configuration
+const corsOptions = {
+  origin: env.ALLOWED_ORIGINS?.split(',') || '*',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Users API (requires admin auth)

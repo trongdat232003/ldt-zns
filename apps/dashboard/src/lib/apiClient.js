@@ -1,10 +1,9 @@
 import { supabase } from './supabase';
 
-// In production, use relative URL (same origin)
-// In local development, use explicit localhost
-const BASE_URL = import.meta.env.DEV 
-  ? 'http://localhost:3456' 
-  : ''; // Empty string = same origin
+// API Backend URL
+// For Vercel: set VITE_API_URL to Render domain (e.g., https://ldt-zns.onrender.com)
+// For local: defaults to localhost
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3456';
 const API_PREFIX = '/api';
 
 export async function apiRequest(path, { method = 'GET', body } = {}) {
