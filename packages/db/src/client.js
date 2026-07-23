@@ -1,5 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
+import WebSocket from 'ws';
 import { env } from '@zns-auto/shared/config';
+
+// Polyfill WebSocket for Node.js < 22
+if (typeof globalThis.WebSocket === 'undefined') {
+  globalThis.WebSocket = WebSocket;
+}
 
 // Anon client (RLS applies)
 export const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);

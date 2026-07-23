@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",
-    "@zns-auto/shared": "*"
+    "@zns-auto/shared": "*",
+    "ws": "^8.18.0"
   }
 }
