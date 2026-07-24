@@ -15,7 +15,9 @@ export async function getReminders({ statusFilter, searchTerm, page, pageSize })
 
   // Apply search
   if (searchTerm && searchTerm.trim()) {
-    query = query.or(`customer_name.ilike.%${searchTerm.trim()}%,invoice_code.ilike.%${searchTerm.trim()}%`);
+    query = query.or(
+      `customer_name.ilike.%${searchTerm.trim()}%,invoice_code.ilike.%${searchTerm.trim()}%`,
+    );
   }
 
   const { data, count, error } = await query
@@ -63,6 +65,6 @@ export async function getDashboardStats() {
       failed: 0,
     },
     recentReminders: recent || [],
-    error
+    error,
   };
 }
