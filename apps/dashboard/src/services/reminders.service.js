@@ -40,12 +40,11 @@ export async function getDashboardStats() {
     .eq('sent', true)
     .gte('sent_at', `${today}T00:00:00`);
 
-  // Pending
+  // Pending (all unsent reminders)
   const { count: pending, error: err3 } = await supabase
     .from('reminders')
     .select('*', { count: 'exact', head: true })
-    .eq('sent', false)
-    .lte('due_date', today);
+    .eq('sent', false);
 
   // Recent reminders
   const { data: recent, error: err4 } = await supabase
