@@ -16,12 +16,12 @@ import { EmptyState } from '../components/common/EmptyState';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import './Products.css';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 
 const Products = () => {
   const [searchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') === 'other' ? 'other' : 'oil';
-  
+
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(null); // product_id to delete
@@ -66,7 +66,7 @@ const Products = () => {
   };
 
   const activeData = activeTab === 'oil' ? products : otherProducts;
-  
+
   // Client-side search filtering on current page data
   const filteredProducts = activeData.filter(p =>
     p.product_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -128,7 +128,7 @@ const Products = () => {
                 <span className="product-category">{product.category_name || 'Không rõ'}</span>
                 <span className="product-id">ID: {product.product_id}</span>
               </div>
-              
+
               {activeTab === 'oil' ? (
                 <button
                   className="btn-icon-danger"
