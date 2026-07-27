@@ -1,12 +1,13 @@
 import { supabase } from '../lib/supabase';
 
-export async function getProducts() {
-  const { data, error } = await supabase
+export async function getProducts({ page = 0, pageSize = 20 } = {}) {
+  const { data, count, error } = await supabase
     .from('oil_products')
-    .select('*')
-    .order('product_name', { ascending: true });
+    .select('*', { count: 'exact' })
+    .order('product_name', { ascending: true })
+    .range(page * pageSize, (page + 1) * pageSize - 1);
 
-  return { data: data || [], error };
+  return { data: data || [], count: count || 0, error };
 }
 
 export async function addProduct(product) {

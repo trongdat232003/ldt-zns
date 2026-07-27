@@ -53,13 +53,16 @@ function AppRoutes() {
 }
 
 import { ToastProvider } from './contexts/ToastContext';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 function App() {
   return (
     <ToastProvider>
       <AuthProvider>
         <BrowserRouter>
-          <AppRoutes />
+          <ErrorBoundary>
+            <AppRoutes />
+          </ErrorBoundary>
         </BrowserRouter>
       </AuthProvider>
     </ToastProvider>

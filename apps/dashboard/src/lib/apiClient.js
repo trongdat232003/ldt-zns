@@ -24,6 +24,11 @@ export async function apiRequest(path, { method = 'GET', body } = {}) {
 
   const json = await res.json().catch(() => null);
   if (!res.ok) {
+    // Auto sign out on 401/403 — triggers AuthContext redirect to /login
+    if (res.status === 401 || res.status === 403) {
+      await supabase.auth.signOut();
+      throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+    }
     throw new Error(json?.error || json?.message || 'Đã có lỗi xảy ra khi gọi API.');
   }
   return json;

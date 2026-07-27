@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { useDashboard } from '../hooks/useDashboard';
 import { StatusBadge } from '../components/common/StatusBadge';
+import { ErrorState } from '../components/common/ErrorState';
+import { EmptyState } from '../components/common/EmptyState';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -60,9 +62,7 @@ const Dashboard = () => {
   if (error) {
     return (
       <div className="dashboard-page">
-        <div className="alert alert-danger" style={{ padding: '1rem', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px' }}>
-          Có lỗi xảy ra khi tải dữ liệu: {error.message || error}
-        </div>
+        <ErrorState message={error.message || error} />
       </div>
     );
   }
@@ -107,9 +107,7 @@ const Dashboard = () => {
           
           <div className="recent-list">
             {recentReminders.length === 0 ? (
-              <div className="empty-state">
-                Chưa có dữ liệu giao dịch
-              </div>
+              <EmptyState message="Chưa có dữ liệu giao dịch" />
             ) : (
               recentReminders.map((reminder, idx) => (
                 <div key={reminder.id} className="recent-item" style={{ animationDelay: `${idx * 0.05}s` }}>

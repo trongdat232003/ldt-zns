@@ -9,6 +9,9 @@ import {
 } from 'lucide-react';
 import { useUsers } from '../hooks/useUsers';
 import { useToast } from '../contexts/ToastContext';
+import { ErrorState } from '../components/common/ErrorState';
+import { DataTable } from '../components/common/DataTable';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import './Users.css';
 
 const Users = () => {
@@ -25,6 +28,10 @@ const Users = () => {
   const [resetPassword, setResetPassword] = useState('');
 
   const [saving, setSaving] = useState(false);
+
+  // Confirm dialog state
+  const [confirmDelete, setConfirmDelete] = useState(null); // { id, email }
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -71,18 +78,67 @@ const Users = () => {
     }
   };
 
-  const handleDeleteUser = async (userId, email) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn xoá người dùng ${email}? Hành động này không thể hoàn tác.`)) {
-      return;
-    }
-
-    const { error } = await deleteUser(userId);
+  const handleDeleteConfirm = async () => {
+    if (!confirmDelete) return;
+    setIsDeleting(true);
+    const { error } = await deleteUser(confirmDelete.id);
+    setIsDeleting(false);
+    setConfirmDelete(null);
     if (error) {
       toast.error(error.message);
     } else {
       toast.success('Xoá người dùng thành công!');
     }
   };
+
+  const columns = [
+    { key: 'email', label: 'Email' },
+    {
+      key: 'role',
+      label: 'Role',
+      render: (u) => (
+        <select 
+          className={`role-select ${u.role}`}
+          value={u.role}
+          onChange={(e) => handleUpdateRole(u.id, e.target.value)}
+        >
+          <option value="staff">Staff</option>
+          <option value="manager">Manager</option>
+          <option value="admin">Admin</option>
+        </select>
+      ),
+    },
+    {
+      key: 'created_at',
+      label: 'Ngày tạo',
+      render: (u) => new Date(u.created_at).toLocaleDateString('vi-VN'),
+    },
+    {
+      key: 'actions',
+      label: 'Thao tác',
+      render: (u) => (
+        <div className="action-buttons">
+          <button 
+            className="btn-icon" 
+            title="Đổi mật khẩu"
+            onClick={() => {
+              setResetUserId(u.id);
+              setResetPassword('');
+            }}
+          >
+            <KeyRound size={16} />
+          </button>
+          <button 
+            className="btn-icon-danger" 
+            title="Xoá người dùng"
+            onClick={() => setConfirmDelete({ id: u.id, email: u.email })}
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="users-page">
@@ -172,70 +228,30 @@ const Users = () => {
       )}
 
       {error && (
-        <div className="alert alert-danger" style={{ marginBottom: '1rem', padding: '1rem', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px' }}>
-          Có lỗi xảy ra: {error.message || error}
-        </div>
+        <ErrorState message={error.message || error} onRetry={refetch} />
       )}
 
       <div className="users-table-container glass-card">
-        {loading ? (
-          <div className="loading-container">
-            <Loader2 size={32} className="animate-spin" />
-            <p>Đang tải danh sách...</p>
-          </div>
-        ) : (
-          <table className="users-table">
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Ngày tạo</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u.id}>
-                  <td>{u.email}</td>
-                  <td>
-                    <select 
-                      className={`role-select ${u.role}`}
-                      value={u.role}
-                      onChange={(e) => handleUpdateRole(u.id, e.target.value)}
-                    >
-                      <option value="staff">Staff</option>
-                      <option value="manager">Manager</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </td>
-                  <td>{new Date(u.created_at).toLocaleDateString('vi-VN')}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button 
-                        className="btn-icon" 
-                        title="Đổi mật khẩu"
-                        onClick={() => {
-                          setResetUserId(u.id);
-                          setResetPassword('');
-                        }}
-                      >
-                        <KeyRound size={16} />
-                      </button>
-                      <button 
-                        className="btn-icon-danger" 
-                        title="Xoá người dùng"
-                        onClick={() => handleDeleteUser(u.id, u.email)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        <DataTable
+          columns={columns}
+          rows={users}
+          loading={loading}
+          emptyMessage="Chưa có người dùng nào"
+          rowKey="id"
+          loadingText="Đang tải danh sách..."
+        />
       </div>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Xoá người dùng"
+        message={`Bạn có chắc chắn muốn xoá người dùng ${confirmDelete?.email || ''}? Hành động này không thể hoàn tác.`}
+        confirmText="Xoá"
+        loading={isDeleting}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   );
 };

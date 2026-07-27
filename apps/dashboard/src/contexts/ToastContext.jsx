@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Info, X, AlertCircle } from 'lucide-react';
 import './Toast.css';
 
 const ToastContext = createContext(null);
@@ -11,10 +11,11 @@ export const ToastProvider = ({ children }) => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
     
-    // Auto remove after 3s
+    // Auto remove after 3s, error/warning after 5s
+    const duration = (type === 'error' || type === 'warning') ? 5000 : 3000;
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3000);
+    }, duration);
   }, []);
 
   const removeToast = useCallback((id) => {
@@ -24,6 +25,7 @@ export const ToastProvider = ({ children }) => {
   const toast = {
     success: (msg) => showToast(msg, 'success'),
     error: (msg) => showToast(msg, 'error'),
+    warning: (msg) => showToast(msg, 'warning'),
     info: (msg) => showToast(msg, 'info'),
   };
 
@@ -36,6 +38,7 @@ export const ToastProvider = ({ children }) => {
             <div className="toast-icon">
               {t.type === 'success' && <CheckCircle size={18} />}
               {t.type === 'error' && <AlertTriangle size={18} />}
+              {t.type === 'warning' && <AlertCircle size={18} />}
               {t.type === 'info' && <Info size={18} />}
             </div>
             <div className="toast-message">{t.message}</div>

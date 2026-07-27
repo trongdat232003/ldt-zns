@@ -4,21 +4,34 @@ import {
   Loader2,
   RefreshCw,
   Trash2,
-  Search
+  Search,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { useToast } from '../contexts/ToastContext';
+import { ErrorState } from '../components/common/ErrorState';
+import { EmptyState } from '../components/common/EmptyState';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import './Products.css';
+
+const PAGE_SIZE = 20;
 
 const Products = () => {
   const [searchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') === 'other' ? 'other' : 'oil';
   
-  const { products, loading, error, refetch, addProduct, deleteProduct } = useProducts();
-  const toast = useToast();
-  
+  const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(null); // product_id to delete
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { products, totalCount, loading, error, refetch, addProduct, deleteProduct } = useProducts({
+    page,
+    pageSize: PAGE_SIZE,
+  });
+  const toast = useToast();
 
   // Currently we only handle "oil" products since fetchOtherProducts was empty
   const otherProducts = [];
@@ -30,12 +43,12 @@ const Products = () => {
     }
   };
 
-  const handleDelete = async (productId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xoá sản phẩm này khỏi danh sách nhớt?')) {
-      return;
-    }
-
-    const { error } = await deleteProduct(productId);
+  const handleDeleteConfirm = async () => {
+    if (!confirmDelete) return;
+    setIsDeleting(true);
+    const { error } = await deleteProduct(confirmDelete);
+    setIsDeleting(false);
+    setConfirmDelete(null);
     if (error) {
       toast.error('Lỗi khi xoá sản phẩm: ' + error.message);
     } else {
@@ -54,10 +67,13 @@ const Products = () => {
 
   const activeData = activeTab === 'oil' ? products : otherProducts;
   
+  // Client-side search filtering on current page data
   const filteredProducts = activeData.filter(p =>
     p.product_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.category_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
     <div className="products-page">
@@ -86,9 +102,7 @@ const Products = () => {
       </div>
 
       {error && (
-        <div className="alert alert-danger" style={{ marginBottom: '1rem', padding: '1rem', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px' }}>
-          Có lỗi xảy ra: {error.message}
-        </div>
+        <ErrorState message={error.message} onRetry={refetch} />
       )}
 
       <div className="products-grid">
@@ -98,10 +112,10 @@ const Products = () => {
             <p>Đang tải danh sách sản phẩm...</p>
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="loading-container">
-            <Package size={48} style={{ color: 'var(--text-secondary)', opacity: 0.4 }} />
-            <p>Không tìm thấy sản phẩm nào</p>
-          </div>
+          <EmptyState
+            icon={<Package size={48} />}
+            message="Không tìm thấy sản phẩm nào"
+          />
         ) : (
           filteredProducts.map((product, index) => (
             <div
@@ -119,7 +133,7 @@ const Products = () => {
                 <button
                   className="btn-icon-danger"
                   title="Xoá khỏi danh sách nhớt"
-                  onClick={() => handleDelete(product.product_id)}
+                  onClick={() => setConfirmDelete(product.product_id)}
                 >
                   <Trash2 size={16} />
                 </button>
@@ -137,6 +151,40 @@ const Products = () => {
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination" style={{ marginTop: '1.5rem' }}>
+          <button
+            className="btn btn-secondary pagination-btn"
+            disabled={page === 0}
+            onClick={() => setPage(p => p - 1)}
+          >
+            <ChevronLeft size={16} /> Trước
+          </button>
+          <span className="page-info">
+            Trang {page + 1} / {totalPages}
+          </span>
+          <button
+            className="btn btn-secondary pagination-btn"
+            disabled={page >= totalPages - 1}
+            onClick={() => setPage(p => p + 1)}
+          >
+            Sau <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Xoá sản phẩm"
+        message="Bạn có chắc chắn muốn xoá sản phẩm này khỏi danh sách nhớt?"
+        confirmText="Xoá"
+        loading={isDeleting}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   );
 };
