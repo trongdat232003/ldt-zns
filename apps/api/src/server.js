@@ -3,6 +3,7 @@ import cors from 'cors';
 import { logger } from '@zns-auto/shared/logger';
 import { authMiddleware } from './middleware/authMiddleware.js';
 import usersRoutes from './routes/users.js';
+import kiotvietRoutes from './routes/kiotviet.js';
 import { env } from '@zns-auto/shared/config';
 import { ReminderRepository } from '@zns-auto/db/reminderRepository';
 
@@ -20,6 +21,9 @@ app.use(express.json());
 
 // Users API (requires admin auth)
 app.use('/api/users', authMiddleware, usersRoutes);
+
+// KiotViet proxy API (requires any authenticated user)
+app.use('/api/kiotviet', authMiddleware, kiotvietRoutes);
 
 // For backwards compatibility: products API 
 // Previously in server.js, dashboard called this for oil products.

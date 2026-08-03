@@ -1,0 +1,571 @@
+2.12.1. Lấy danh sách hóa đơn 
+- Mục đích sử dụng: Trả về danh sách hóa đơn theo cửa hàng đã được xác nhận
+
+- Phương thức và URL: GET https://public.kiotapi.com/invoices
+
+- Request: Sử dụng hàm GET với tham số:
+
+“branchIds”: int[], optional // ID chi nhánh
+“customerIds”: long[], optional // Id khách hàng
+“customerCode”: string //Mã khách hàng
+“status”: int[], optional // Tình trạng đặt hàng
+“includePayment”: Boolean, // có lấy thông tin thanh toán
+ “includeInvoiceDelivery”: Boolean, //hóa đơn có giao hàng hay không
+“lastModifiedFrom”: datetime? // thời gian cập nhật
+“pageSize”: int?, // số items trong 1 trang, mặc định 20 items, tối đa 100 items
+“currentItem”: int,
+“lastModifiedFrom”: datetime? // thời gian cập nhật
+“toDate”: datetime? //Thời gian cập nhật cho đến thời điểm toDate
+“orderBy”: string, //Sắp xếp dữ liệu theo trường orderBy (Ví dụ: orderBy=name)
+“pageSize”: int?, // số items trong 1 trang, mặc định 20 items, tối đa 100 items
+“orderDirection”: string, //Sắp xếp kết quả trả về theo: Tăng dần Asc (Mặc định), giảm dần Desc
+
+“orderId”: long?, // Lọc danh sách hóa đơn theo Id của hóa đơn
+“createdDate”: datetime? //Thời gian tạo
+“fromPurchaseDate”: datetime? //Từ ngày giao dịch
+“toPurchaseDate”: datetime? //Đến ngày giao dịch
+
+“IncludeSaleChannel”: Boolean //Có lấy dữ liệu SaleChannel không
+
+- Response:
+
+{
+
+“total”: int,
+“pageSize”: int,
+“data”: [{
+
+“id”: long //Id đặt hàng
+“code”: string //Mã đặt hàng
+“purchaseDate”: datetime // Ngày đặt hàng
+“branchId”: int, //Id chi nhánh
+“branchName”: string, //Tên chi nhánh
+“soldById”: long?,
+“soldByName”: string
+“customerId”: long?, // Id khách hàng
+“customerCode”: string, Mã khách hàng
+“customerName”: string, // Tên khách hàng
+“total”: decimal, // Khách cần trả
+“totalPayment”: decimal, //Khách đã trả
+“status”: int, // trạng thái hóa đơn
+“statusValue”: string, // trạng thái đơn đặt hàng bằng chữ
+“usingCod”: boolean,
+“createdDate”: datetime, //Ngày tạo
+“modifiedDate”: datetime, //Ngày cập nhật
+
+"totalTax": decimal?,
+“payments” :[{
+
+“id”: long,
+“code”: string,
+“amount”: decimal,
+“method”: string”,
+“status”: byte?,
+
+“statusValue”: string,
+“transDate”: datetime,
+“bankAccount”: string,
+“accountId”: int?
+
+}],
+
+"invoiceOrderSurcharges": [        {
+
+"id": long,
+"invoiceId":long?,
+"surchargeId": long?,
+"surchargeName": string,
+"surValue": decimal?,
+"price": decimal?,
+"createdDate": DateTime
+
+}
+
+],
+
+“invoiceDetails” :{
+
+“productId”: long, // Id hàng hóa
+“productCode”: string,
+“productName”: string, //Tên hàng hóa
+(bao gồm thuộc tính và đơn vị tính)
+“quantity”: double, // Số lượng hàng hóa
+“price”: decimal, //Giá trị
+“discountRatio”: double?, // Giảm giá trên sản phẩm theo %
+“discount”: decimal?, // Giảm giá trên sản phẩm theo tiền
+“note”: string // Ghi chú hàng hóa
+"serialNumbers": string, // Danh sách imei
+"productBatchExpire": {
+
+"id": long, // Id lô
+"productId" long, // ID sản phẩm
+"batchName": string, // Tên
+"fullNameVirgule": string, // Tên đầy đủ
+"createdDate": DateTime, // Ngày tạo lô
+"expireDate": DateTime // Ngày hết hạn lô
+
+}
+
+"invoiceDetailTaxs": [
+
+{
+
+"id": "int",
+
+"detailId": "long",
+
+"detailTax": "decimal?",
+
+"taxId": "int",
+
+"name": "string",
+
+"value": "decimal?",
+
+"priceAfterTax": decimal?, //Giá sau thuế
+
+"discountAfterTax": decimal?, //Giảm giá sau thuế
+
+"discountByPromotionAfterTax": decimal?, //Giảm giá khuyến mại sau thuế
+
+"allocationDiscountAfterTax": decimal? //Phân bổ giảm giá sau thuế
+
+}
+
+]
+
+}
+
+],
+
+“SaleChannel”:{
+
+“IsNotDelete”: bool,
+“RetailerId”: long,
+“Position”: int,
+“IsActivate”: bool,
+“CreatedBy”: long,
+“CreatedDate”: datetime,
+“Id”: long,
+“Name”: string
+
+},// Để lấy thông tin SaleChannel thì phải truyền thêm
+
+//SaleChannel=true
+
+“invoiceDelivery”:{
+
+“deliveryCode”: string,
+“type”: byte?,
+
+“status”: byte, (1: Chờ xử lý, 2: Đang giao hàng,3: Giao thành công, 4:Đang chuyển hoàn, 5:Đã chuyển hoàn, 6:Đã hủy, 7: Đang lấy hàng, 8:Chờ lấy lại, 9:Đã lấy hàng, 10:Chờ giao lại, 11:Chờ chuyển hàng, 12:Chờ chuyển hoàn lại) //trạng thái vận đơn
+
+“statusValue”: string,
+“price”: Decimal?,
+“receiver”: string,
+“contactNumber”: string,
+“address”: string,
+“locationId”: int?,
+“locationName”: string,
+“usingPriceCod”: bool, //Thu hộ tiền
+“priceCodPayment”: decimal, //Số tiền thu hộ
+“weight”: double?,
+“length”:  double?,
+“width”:  double?,
+“height”: double?,
+“partnerDeliveryId”: long?,
+“partnerDelivery”:{
+
+“code”: string,
+“name”: string,
+“address”: string,
+“contactNumber”: string,
+“email”: string
+
+}
+
+}
+
+}]
+
+}
+
+ 
+
+2.12.2. Lấy chi tiết hóa đơn
+- Mục đích sử dụng: Trả về thông tin chi tiết của hóa đơn theo ID, theo Code
+
+- Phương thức và URL:
+
+Theo Id : GET https://public.kiotapi.com/invoices/ {id}
+Theo Code : GET https://public.kiotapi.com/invoices/code/ {code}
+- Request: Sử dụng hàm GET với tham số:
+
+“id”: long // ID của hóa đơn
+"code”: string // Mã của hóa đơn
+
+- Response:
+
+{
+
+“id”: long //Id hóa đơn
+“code”: string //Mã hóa đơn
+“orderCode”: string //Mã đơn đặt hàng
+“purchaseDate”: datetime // Ngày hóa đơn
+“branchId”: int, //Id chi nhánh
+“branchName”: string, //Tên chi nhánh
+“soldById”: long?,
+“soldByName”: string
+
+“customerId”: long?, // Id khách hàng
+“customerCode”: string, //Mã khách hàng
+“customerName”: string, // Tên khách hàng
+“total”: decimal, // Khách cần trả
+“totalPayment”: decimal, //Khách đã trả
+“status”: int, // trạng thái đơn hóa đơn
+“statusValue”: string, // trạng thái đơn hóa đơn bằng chữ
+“description”: string, // ghi chú
+
+“usingCod”: boolean,
+“createdDate”: datetime, //Ngày tạo
+“modifiedDate”: datetime, //Ngày cập nhật
+
+"totalTax": decimal?,
+“payments” :[{
+
+“id”: long,
+“code”: string,
+“amount”: decimal,
+“method”: string,
+“status”: byte?,
+“statusValue”: string,
+“transDate”: datetime,
+“bankAccount”: string,
+“accountId”: int?
+
+}],
+
+"invoiceOrderSurcharges": [                      
+
+{
+"id": long,
+"invoiceId":long?,
+"surchargeId": long?,
+"surchargeName": string,
+"surValue": decimal?,
+"price": decimal?,
+"createdDate": DateTime
+
+}
+
+],
+
+“invoiceDetails” :{
+
+“productId”: long, // Id hàng hóa
+“productCode”: string,
+“productName”: string, //Tên hàng hóa (bao gồm thuộc tính và đơn vị tính)
+
+“quantity”: double, // Số lượng hàng hóa
+“price”: decimal, //Giá trị
+“discountRatio”: double?, // Giảm giá trên sản phẩm theo %
+“discount”: decimal?, // Giảm giá trên sản phẩm theo tiền
+“note”: string // Ghi chú hàng hóa
+"serialNumbers": string, // Danh sách imei
+"productBatchExpire": {
+
+"id": long, // Id lô
+
+"productId" long, // ID sản phẩm
+"batchName": string, // Tên
+"fullNameVirgule": string, // Tên đầy đủ
+"createdDate": DateTime, // Ngày tạo lô
+"expireDate": DateTime // Ngày hết hạn lô
+
+}
+
+"invoiceDetailTaxs": [
+
+{
+
+          "taxId": "int",  // ID thuế
+
+           "detailTax": "decimal?",   // Tiền thuế
+
+"taxName": "string",   // Tên thuế
+
+                      "taxValue": "decimal?",   // Tỷ lệ thuế
+
+                      "taxAmount": "decimal?",   // Tiền thuế
+
+"taxRate": "decimal?",    // Tỷ lệ thuế (có thể mapping từ taxValue)
+
+"priceAfterTax": "decimal?",   // Giá sau thuế
+
+"discountAfterTax": "decimal?",      // Giảm giá sau thuế
+
+"discountByPromotionAfterTax": "decimal?", // Giảm giá do khuyến mãi sau thuế
+
+"allocationDiscountAfterTax": "decimal?",  // Giảm giá phân bổ sau thuế
+
+"subTotalAfterTax": "decimal?"   // Thành tiền sau thuế
+
+                  }
+
+           ],
+
+          // Thông tin hàng hóa thành phần trong đơn nếu bán hàng combo
+
+"comboItems": [
+
+{
+
+        "productId": long, // Id hàng thành phần
+
+        "productCode": "string", // Mã hàng thành phần
+
+        "productName": "string", // Tên hàng thành phần
+
+        "productType": "byte", // Loại hàng thành phần
+
+        "quantity": "double",  //  Số lượng hàng thành phần (chưa nhân với số lượng hàng combo trong InvoiceDetail)
+
+        "price":"decimal", // Đơn giá trước thuế
+
+        "priceAfterTax": "decimal?", // Đơn giá đã bao gồm thuế
+
+        "discount":"decimal?", // Tiền giảm giá trước thuế
+
+        "discountAfterTax":"decimal?", // Tiền giảm giá (đã bao gồm thuế)
+
+        "allocationDiscount":"decimal?", // Tiền giảm giá trên đơn phân bổ vào chi tiết hàng tp
+
+        "allocationDiscountAfterTax":"decimal?", // Tiền giảm giá trên đơn phân bổ vào chi tiết hàng tp (đã bao gồm thuế)
+
+        "priceAfterTax": "decimal?",
+
+        "subTotal": "decimal?",  // Thành tiền hàng thành phần (chưa bao gồm thuế)
+
+        "subTotalAfterTax": "decimal?", Thành tiền hàng thành phần (đã bao gồm thuế)
+
+        "taxAmount": "decimal?", // Tiền thuế
+
+        "taxRate": "decimal?" // Tỉ lệ tính thuế của hàng thành phần trong đơn
+
+}
+
+       ]
+
+    }
+
+],
+
+“invoiceDelivery”:{
+
+“deliveryCode”: string,
+“type”: byte?,
+
+“status”: byte, (1: chưa giao hàng, 2: đang giao hàng, 3: đã giao hàng, 4: đang chuyển hoàn, 5 đã chuyển hoàn, 6: đã hủy) //trạng thái vận đơn
+
+“statusValue”: string,
+“price”: Decimal?,
+“receiver”: string,
+“contactNumber”: string,
+“address”: string,
+“locationId”: int?,
+“locationName”: string,
+“usingPriceCod”: bool, //Thu hộ tiền
+“priceCodPayment”: decimal, //Số tiền thu hộ
+“weight”: double?,
+“length”:  double?,
+“width”:  double?,
+“height”: double?,
+“partnerDeliveryId”: long?,
+“partnerDelivery”:{
+
+“code”: string,
+“name”: string,
+“address”: string,
+“contactNumber”: string,
+“email”: string
+
+},
+
+“SaleChannel”:{
+
+“IsNotDelete”: bool,
+“RetailerId”: long,
+“Position”: int,
+“IsActivate”: bool,
+“CreatedBy”: long,
+“CreatedDate”: datetime,
+“Id”: long,
+“Name”: string
+
+}
+
+// Thông tin các voucher được thanh toán trên đơn
+
+   "vouchers": [
+
+       {
+
+           "code": "string", // Mã voucher
+
+           "value": "decimal" // Giá trị voucher
+
+       }
+
+   ],
+
+// Thông tin coupon được thanh toán trên đơn
+
+   "coupon": {
+
+       "code": "string", // Mã coupon
+
+       "ratio": "decimal?", // Tỷ lệ chiết khấu coupon (%)
+
+       "value": "decimal" // Giá trị chiết khấu coupon
+
+}
+
+}
+
+2.6.2. Lấy chi tiết khách hàng
+- Mục đích sử dụng: Trả lại thông tin chi tiết của khách hàng theo ID, theo Code
+
+- Phương thức và URL:
+
+Theo Id : GET https://public.kiotapi.com/customers/{id}
+
+Theo Code : GET https://public.kiotapi.com/customers/code/{code}
+
+- Request: Sử dụng hàm GET với tham số:
+
+“id”: long // ID của khách hàng
+“code”: string // Mã của khách hàng
+
+- Response:
+
+{
+
+“id”: long, // ID khách hàng
+"code": string, // Mã khách hàng
+"name": string, // Tên khách hàng
+“gender”: Boolean?, // Giới tính (true: nam, false: nữ)
+"birthDate": datetime?, // Ngày sinh khách hàng
+"contactNumber": string, // Số điện thoại khách hàng
+“address”: string, // Địa chỉ khách hàng
+“locationName”: string, // Khu vực
+
+“wardName”: string, // Phường xã
+"email": string, // Email của khách hàng
+"organization": string, // Công ty
+"comments": string, // Ghi chú
+"taxCode": string, // Mã số thuế
+“retailerId”: int, // Id cửa hàng
+"debt": decimal, // Nợ hiện tại
+"totalInvoiced": decimal?, // Tổng bán
+"totalPoint": double?, // Tổng điểm
+"totalRevenue": decimal?,
+“modifiedDate”: datetime? // thời gian cập nhật
+“createdDate”: datetime
+“groups”: string // danh sách tên nhóm khách hàng,
+“rewardPoint”: long?// Điểm hiện tại
+“psidFacebook”: long?// Psid facebook fanpage
+
+}
+
+2.6.3. Thêm mới khách hàng
+- Mục đích sử dụng: Tạo mới khách hàng
+
+- Phương thức và URL: POST https://public.kiotapi.com/customers
+
+- Request: JSON mã hóa yêu cầu gồm 1 object khách hàng:
+
+{
+
+“code”: string, // Ma khach hang
+
+“name”: string, // Tên khách hàng
+
+“gender”: Boolean, // Giới tính (true: nam, false: nữ)
+
+"birthDate": datetime?, // Ngày sinh khách hàng
+
+"contactNumber": string, // Số điện thoại khách hàng
+
+"subNumber": string, // Số điện thoại khách hàng thứ hai
+
+"IdentificationNumber": string, // Số CCCD/CMND khách hàng
+
+"address": string, // Địa chỉ khách hàng
+
+“locationName”: string, // Khu vực
+
+“wardName”: string, // Phường xã
+
+"email": string, // Email của khách hàng
+
+"comments": string, // Ghi chú
+
+"groupIds": int[] // Danh sách Id nhóm khách hàng
+
+“branchId”: int[] // ID chi nhánh tạo khách hàng
+
+}
+
+-  Response:
+
+{
+
+“id”: long, // ID khách hàng (với id=-1 là bản ghi đầu tiên chứa thông tin tổng quan)
+
+"code": string, // Mã khách hàng
+
+"name": string, // Tên khách hàng
+
+"type": int, // Loại khách hàng ( 0 : Cá nhân, 1 : Công ty )
+
+“gender”: Boolean, // Giới tính (true: nam, false: nữ)
+
+"birthDate": datetime?, // Ngày sinh khách hàng
+
+"contactNumber": string, // Số điện thoại khách hàng
+
+"subNumber": string, // Số điện thoại khách hàng thứ hai
+
+"IdentificationNumber": string, // Số CCCD/CMND khách hàng
+
+“address”: string, // Địa chỉ khách hàng
+
+“locationName”: string, // Khu vực
+
+"email": string, // Email của khách hàng
+
+"organization": string, // Tên công ty của khách hàng (nếu là khách hàng công ty)
+
+"comments": string, // Ghi chú
+
+"taxCode": string, // Mã số thuế
+
+“retailerId”: int, // Id cửa hàng
+
+“modifiedDate”: datetime?, // Thời gian cập nhật
+
+“createdDate”: datetime
+
+"customerGroupDetails": [
+
+{
+
+"id": long // Id Chi tiết nhóm khách hàng
+"customerId": long // Id khách hàng
+"groupId": int // Id nhóm khách hàng
+
+}
+
+],
+
+}

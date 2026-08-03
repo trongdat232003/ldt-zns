@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
+import { useDebounce } from '../hooks/useDebounce';
 import { useToast } from '../contexts/ToastContext';
 import { ErrorState } from '../components/common/ErrorState';
 import { EmptyState } from '../components/common/EmptyState';
@@ -24,12 +25,14 @@ const Products = () => {
 
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [confirmDelete, setConfirmDelete] = useState(null); // product_id to delete
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { products, totalCount, loading, error, refetch, addProduct, deleteProduct } = useProducts({
     page,
     pageSize: PAGE_SIZE,
+    search: debouncedSearch,
   });
   const toast = useToast();
 
@@ -67,11 +70,8 @@ const Products = () => {
 
   const activeData = activeTab === 'oil' ? products : otherProducts;
 
-  // Client-side search filtering on current page data
-  const filteredProducts = activeData.filter(p =>
-    p.product_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.category_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // filteredProducts is already filtered server-side for oil tab
+  const filteredProducts = activeData;
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -91,7 +91,7 @@ const Products = () => {
               placeholder="Tìm kiếm sản phẩm..."
               className="input-field search-input"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
             />
           </div>
           <button className="btn btn-secondary" onClick={handleRefresh}>
@@ -153,7 +153,7 @@ const Products = () => {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {filteredProducts.length > 0 && totalPages > 1 && (
         <div className="pagination" style={{ marginTop: '1.5rem' }}>
           <button
             className="btn btn-secondary pagination-btn"

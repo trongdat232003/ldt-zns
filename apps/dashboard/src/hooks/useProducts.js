@@ -19,7 +19,7 @@ export function useProducts(filters = {}) {
     }
     
     setLoading(false);
-  }, [filters.page, filters.pageSize]);
+  }, [filters.page, filters.pageSize, filters.search]);
 
   useEffect(() => {
     load();

@@ -10,6 +10,7 @@
     "express": "^5.2.1",
     "cors": "^2.8.6",
     "@zns-auto/shared": "*",
-    "@zns-auto/db": "*"
+    "@zns-auto/db": "*",
+    "@zns-auto/integrations": "*"
   }
 }

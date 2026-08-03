@@ -17,6 +17,7 @@ import { EmptyState } from './EmptyState';
  *   emptyIcon   - React node (optional)
  *   rowKey      - string | function: key cho mỗi row (mặc định 'id')
  *   loadingText - string (mặc định "Đang tải...")
+ *   onRowClick  - function(row, index): callback khi click vào row (optional)
  */
 export const DataTable = ({
   columns = [],
@@ -26,6 +27,7 @@ export const DataTable = ({
   emptyIcon,
   rowKey = 'id',
   loadingText = 'Đang tải...',
+  onRowClick,
 }) => {
   const getRowKey = (row, index) => {
     if (typeof rowKey === 'function') return rowKey(row, index);
@@ -63,7 +65,12 @@ export const DataTable = ({
             </tr>
           ) : (
             rows.map((row, index) => (
-              <tr key={getRowKey(row, index)}>
+              <tr
+                key={getRowKey(row, index)}
+                onClick={onRowClick ? () => onRowClick(row, index) : undefined}
+                style={onRowClick ? { cursor: 'pointer' } : undefined}
+                className={onRowClick ? 'clickable-row' : undefined}
+              >
                 {columns.map((col) => (
                   <td key={col.key} className={col.className || ''}>
                     {col.render

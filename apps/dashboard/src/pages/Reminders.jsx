@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -16,6 +17,7 @@ import './Reminders.css';
 const PAGE_SIZE = 15;
 
 const Reminders = () => {
+  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState(REMINDER_STATUS.ALL);
@@ -42,7 +44,6 @@ const Reminders = () => {
     {
       key: 'customer_code',
       label: 'Mã KH',
-      className: 'code-cell',
       render: (r) => r.customer_code || '—',
     },
     {
@@ -124,6 +125,7 @@ const Reminders = () => {
           emptyMessage="Không tìm thấy dữ liệu phù hợp"
           rowKey={(r) => r.id || r.invoice_code}
           loadingText="Đang tải..."
+          onRowClick={(reminder) => navigate(`/reminders/${reminder.invoice_code}`)}
         />
 
         {/* Pagination */}

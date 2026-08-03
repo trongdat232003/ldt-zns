@@ -84,7 +84,8 @@
 }
 
 .btn-danger:hover {
-  background-color: #dc2626;
+  background-color: var(--danger);
+  filter: brightness(0.9);
   box-shadow: 0 6px 20px rgba(239, 68, 68, 0.2);
   transform: translateY(-1px);
 }

@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Reminders from './pages/Reminders';
+import InvoiceDetail from './pages/InvoiceDetail';
 import Products from './pages/Products';
 import Users from './pages/Users';
 
@@ -31,6 +32,7 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="reminders" element={<Reminders />} />
+        <Route path="reminders/:invoiceCode" element={<InvoiceDetail />} />
         <Route 
           path="products" 
           element={

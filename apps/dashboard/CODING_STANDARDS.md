@@ -10,12 +10,13 @@ Tài liệu này thống nhất **cách code, cách tổ chức, cách thêm tí
 3. [Quy Ước Đặt Tên & Code Style](#3-quy-ước-đặt-tên--code-style)
 4. [Quy Trình Thêm Một Tính Năng Mới](#4-quy-trình-thêm-một-tính-năng-mới)
 5. [Quy Ước Gọi API (Data Layer)](#5-quy-ước-gọi-api-data-layer)
-6. [Quy Ước Giao Diện (UI Components)](#6-quy-ước-giao-diện-ui-components)
-7. [Quy Ước Loading State](#7-quy-ước-loading-state)
-8. [Quy Ước Xử Lý & Hiển Thị Lỗi](#8-quy-ước-xử-lý--hiển-thị-lỗi)
-9. [Quy Ước Thông Báo (Toast/Notification)](#9-quy-ước-thông-báo-toastnotification)
-10. [Quy Ước Phân Quyền (RBAC) Khi Thêm Trang Mới](#10-quy-ước-phân-quyền-rbac-khi-thêm-trang-mới)
-11. [Checklist Trước Khi Merge](#11-checklist-trước-khi-merge)
+6. [Quy Ước Tìm Kiếm (Search Pattern)](#6-quy-ước-tìm-kiếm-search-pattern)
+7. [Quy Ước Giao Diện (UI Components)](#7-quy-ước-giao-diện-ui-components)
+8. [Quy Ước Loading State](#8-quy-ước-loading-state)
+9. [Quy Ước Xử Lý & Hiển Thị Lỗi](#9-quy-ước-xử-lý--hiển-thị-lỗi)
+10. [Quy Ước Thông Báo (Toast/Notification)](#10-quy-ước-thông-báo-toastnotification)
+11. [Quy Ước Phân Quyền (RBAC) Khi Thêm Trang Mới](#11-quy-ước-phân-quyền-rbac-khi-thêm-trang-mới)
+12. [Checklist Trước Khi Merge](#12-checklist-trước-khi-merge)
 
 ---
 
@@ -52,7 +53,8 @@ apps/dashboard/src/
 │   ├── useDashboard.js
 │   ├── useReminders.js
 │   ├── useProducts.js
-│   └── useUsers.js
+│   ├── useUsers.js
+│   └── useDebounce.js         # Hook debounce dùng chung
 ├── lib/
 │   ├── supabase.js            # Supabase client init
 │   └── apiClient.js           # Wrapper gọi Express Admin API (auto JWT, xử lý 401/403)
@@ -220,7 +222,77 @@ export async function apiRequest(path, { method = 'GET', body } = {}) {
 
 ---
 
-## 6. QUY ƯỚC GIAO DIỆN (UI COMPONENTS)
+## 6. QUY ƯỚC TÌM KIẾM (SEARCH PATTERN)
+
+### Nguyên tắc bắt buộc
+- Tìm kiếm **luôn là server-side** — query Supabase với filter, không filter trên mảng client.
+- Luôn dùng `useDebounce` để tránh spam request mỗi ký tự gõ.
+- Khi user gõ từ khóa mới, **reset về trang 0** để tránh hiển thị trang trống.
+
+### Pattern chuẩn (áp dụng cho Products, Reminders):
+
+**1. Hook `useDebounce` (hooks/useDebounce.js)**
+```js
+export function useDebounce(value, delay = 300) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+```
+
+**2. Trong Page component**
+```jsx
+const [searchTerm, setSearchTerm] = useState('');       // giá trị input hiển thị
+const [page, setPage] = useState(0);
+const debouncedSearch = useDebounce(searchTerm, 300);   // chờ 300ms sau khi ngừng gõ
+
+const { products } = useProducts({
+  page,
+  pageSize: PAGE_SIZE,
+  search: debouncedSearch,   // chỉ truyền debouncedSearch, KHÔNG truyền searchTerm
+});
+
+// Handler: reset trang khi thay đổi từ khóa
+onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+```
+
+**3. Trong Service (Supabase)**
+```js
+export async function getProducts({ page = 0, pageSize = 20, search = '' } = {}) {
+  let query = supabase
+    .from('oil_products')
+    .select('*', { count: 'exact' })
+    .order('product_name', { ascending: true });
+
+  if (search.trim()) {
+    query = query.ilike('product_name', `%${search.trim()}%`);
+  }
+
+  query = query.range(page * pageSize, (page + 1) * pageSize - 1);
+  const { data, count, error } = await query;
+  return { data: data || [], count: count || 0, error };
+}
+```
+
+**4. Trong Hook — thêm `search` vào dependency**
+```js
+const load = useCallback(async () => {
+  // ...
+}, [filters.page, filters.pageSize, filters.search]); // search phải có trong deps
+```
+
+### Vì sao không filter client-side?
+- Client chỉ có 15 sản phẩm của trang hiện tại — tìm theo trang = bỏ sót dữ liệu ở trang khác.
+- `ilike '%keyword%'` với Supabase quét toàn bảng, trả về đúng `count` → phân trang chính xác.
+
+---
+
+## 7. QUY ƯỚC GIAO DIỆN (UI COMPONENTS)
 
 - Toàn bộ màu sắc, spacing, font lấy từ **Design Token** khai báo tại `index.css` (biến CSS `--accent-primary`, `--danger`, `--text-secondary`...). Không hard-code mã màu hex trong file CSS hoặc inline style của component.
 - Component dùng chung đặt trong `components/common/`, tái sử dụng cho mọi Page thay vì viết lại.
@@ -280,7 +352,7 @@ const handleDeleteConfirm = async () => {
 
 ---
 
-## 7. QUY ƯỚC LOADING STATE
+## 8. QUY ƯỚC LOADING STATE
 
 Áp dụng thống nhất 3 cấp độ loading:
 
@@ -295,7 +367,7 @@ const handleDeleteConfirm = async () => {
 
 ---
 
-## 8. QUY ƯỚC XỬ LÝ & HIỂN THỊ LỖI
+## 9. QUY ƯỚC XỬ LÝ & HIỂN THỊ LỖI
 
 ### 8.1. ErrorBoundary (lỗi render-time)
 - `<ErrorBoundary>` bọc `<AppRoutes />` trong `App.jsx`.
@@ -341,7 +413,7 @@ export const SUCCESS_MESSAGES = {
 
 ---
 
-## 9. QUY ƯỚC THÔNG BÁO (TOAST/NOTIFICATION)
+## 10. QUY ƯỚC THÔNG BÁO (TOAST/NOTIFICATION)
 
 - Dùng hệ thống toast chung qua `ToastContext`, gọi qua hook `useToast()`:
 
@@ -365,7 +437,7 @@ toast.info('Đang đồng bộ dữ liệu...');
 
 ---
 
-## 10. QUY ƯỚC PHÂN QUYỀN (RBAC) KHI THÊM TRANG MỚI
+## 11. QUY ƯỚC PHÂN QUYỀN (RBAC) KHI THÊM TRANG MỚI
 
 Khi thêm route/tính năng mới, luôn xác định rõ theo bảng hiện có:
 
@@ -381,7 +453,7 @@ Khi thêm route/tính năng mới, luôn xác định rõ theo bảng hiện có
 
 ---
 
-## 11. CHECKLIST TRƯỚC KHI MERGE
+## 12. CHECKLIST TRƯỚC KHI MERGE
 
 - [ ] Không gọi `supabase`/`fetch` trực tiếp trong file `pages/*`.
 - [ ] Có xử lý đủ 4 trạng thái: loading / error / empty / có dữ liệu.
@@ -393,3 +465,5 @@ Khi thêm route/tính năng mới, luôn xác định rõ theo bảng hiện có
 - [ ] Không còn `console.log` thừa.
 - [ ] Message lỗi hiển thị cho người dùng là tiếng Việt, thân thiện, không lộ lỗi kỹ thuật.
 - [ ] Service query dùng phân trang (`select('*', { count: 'exact' })` + `.range()`).
+- [ ] Ô tìm kiếm dùng `useDebounce` (300ms) + truyền `search` xuống service để query server-side — không filter client-side trên trang hiện tại.
+- [ ] Pagination ẩn khi không có dữ liệu (`filteredProducts.length > 0 && totalPages > 1`).
