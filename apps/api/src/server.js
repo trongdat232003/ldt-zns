@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { logger } from '@zns-auto/shared/logger';
 import { authMiddleware } from './middleware/authMiddleware.js';
+import helmet from 'helmet';
 import usersRoutes from './routes/users.js';
 import kiotvietRoutes from './routes/kiotviet.js';
 import { env } from '@zns-auto/shared/config';
@@ -9,9 +10,23 @@ import { ReminderRepository } from '@zns-auto/db/reminderRepository';
 
 const app = express();
 
+// Security headers
+app.use(helmet());
+
+// HTTPS enforcement in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
+
 // CORS configuration
 const corsOptions = {
-  origin: env.ALLOWED_ORIGINS?.split(',') || '*',
+  origin: env.ALLOWED_ORIGINS?.split(',') || false,
   credentials: true,
   optionsSuccessStatus: 200
 };

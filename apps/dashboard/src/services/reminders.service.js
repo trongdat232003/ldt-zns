@@ -15,9 +15,13 @@ export async function getReminders({ statusFilter, searchTerm, page, pageSize })
 
   // Apply search
   if (searchTerm && searchTerm.trim()) {
-    query = query.or(
-      `customer_name.ilike.%${searchTerm.trim()}%,invoice_code.ilike.%${searchTerm.trim()}%`,
-    );
+    // Sanitize: remove PostgREST special chars to prevent filter injection
+    const term = searchTerm.trim().replace(/[,.()"'\\]/g, '');
+    if (term) {
+      query = query.or(
+        `customer_name.ilike.%${term}%,invoice_code.ilike.%${term}%`,
+      );
+    }
   }
 
   const { data, count, error } = await query

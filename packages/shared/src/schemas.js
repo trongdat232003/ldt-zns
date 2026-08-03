@@ -23,3 +23,19 @@ export const OilProductSchema = z.object({
   product_name: z.string(),
   category_name: z.string()
 });
+
+export const UserRoleSchema = z.enum(['admin', 'staff']);
+
+export const CreateUserSchema = z.object({
+  email: z.string().email('Email không hợp lệ'),
+  password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
+  role: UserRoleSchema.optional().default('staff'),
+});
+
+export const UpdatePasswordSchema = z.object({
+  password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
+});
+
+export const UpdateRoleSchema = z.object({
+  role: UserRoleSchema,
+});

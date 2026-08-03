@@ -33,7 +33,7 @@ export async function sendZNSMessage(invoice) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      logger.error(`❌ API ZNS trả về lỗi cho ${invoice.invoice_code}: ${response.status} - ${errorText}`);
+      logger.error(`❌ API ZNS trả về lỗi cho ${invoice.invoice_code}: HTTP ${response.status}`);
       return false;
     }
 
@@ -44,7 +44,7 @@ export async function sendZNSMessage(invoice) {
       return false;
     }
 
-    logger.info(`✅ Gửi ZNS thành công cho ${invoice.invoice_code} (${invoice.phone})`);
+    logger.info(`✅ Gửi ZNS thành công cho ${invoice.invoice_code}`);
     return true;
   } catch (error) {
     logger.error(`❌ Lỗi hệ thống khi gửi ZNS cho ${invoice.invoice_code}: ${error.message}`);

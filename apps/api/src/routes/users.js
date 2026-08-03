@@ -1,7 +1,9 @@
 import express from 'express';
 import { createServiceRoleClient } from '@zns-auto/db/client';
+import { CreateUserSchema, UpdatePasswordSchema, UpdateRoleSchema } from '@zns-auto/shared/schemas';
 
 const router = express.Router();
+
 // Create client per-request or globally? We'll create one globally since it's an admin server.
 const supabaseAdmin = createServiceRoleClient();
 
@@ -34,7 +36,11 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const validated = CreateUserSchema.safeParse(req.body);
+    if (!validated.success) {
+      return res.status(400).json({ error: validated.error.issues[0].message });
+    }
+    const { email, password, role } = validated.data;
     
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
@@ -59,7 +65,11 @@ router.post('/', async (req, res) => {
 router.put('/:id/password', async (req, res) => {
   try {
     const { id } = req.params;
-    const { password } = req.body;
+    const validated = UpdatePasswordSchema.safeParse(req.body);
+    if (!validated.success) {
+      return res.status(400).json({ error: validated.error.issues[0].message });
+    }
+    const { password } = validated.data;
     
     const { data, error } = await supabaseAdmin.auth.admin.updateUserById(id, {
       password
@@ -75,7 +85,11 @@ router.put('/:id/password', async (req, res) => {
 router.put('/:id/role', async (req, res) => {
   try {
     const { id } = req.params;
-    const { role } = req.body;
+    const validated = UpdateRoleSchema.safeParse(req.body);
+    if (!validated.success) {
+      return res.status(400).json({ error: validated.error.issues[0].message });
+    }
+    const { role } = validated.data;
     
     const { error } = await supabaseAdmin
       .from('user_roles')

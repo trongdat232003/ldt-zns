@@ -35,8 +35,9 @@ export async function sendDueReminders() {
       failCount++;
     }
 
-    // Delay 500ms to avoid rate limit
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Random delay 500-700ms to avoid rate limit and timing patterns
+    const delay = 500 + Math.random() * 200;
+    await new Promise(resolve => setTimeout(resolve, delay));
   }
 
   logger.info(`✅ Finished sending: ${successCount} success, ${failCount} failed`);
