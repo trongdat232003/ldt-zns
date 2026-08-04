@@ -19,7 +19,8 @@ const envSchema = z.object({
   KIOTVIET_CLIENT_SECRET: z.string().min(1),
   KIOTVIET_RETAILER: z.string().min(1),
   ZNS_API_KEY: z.string().min(1),
-  ZNS_TEMPLATE_ID: z.string().min(1)
+  ZNS_TEMPLATE_ID: z.string().min(1),
+  ALLOWED_ORIGINS: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
