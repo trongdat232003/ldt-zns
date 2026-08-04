@@ -18,18 +18,30 @@ export async function sendZNSMessage(invoice) {
       body: JSON.stringify({
         template_id: env.ZNS_TEMPLATE_ID,
         phone: invoice.phone,
+        // data: {
+        //   ten_khach_hang: displayName,
+        //   bien_so_xe: displayName,
+        //   sdt: invoice.phone,
+        //   ngay_thang_nam: invoice.purchase_date,
+        //   lan_thay_nhot: "1",
+        //   so_kilomet: ""
+        // },
         data: {
           ten_khach_hang: displayName,
-          bien_so_xe: displayName,
-          sdt: invoice.phone,
-          ngay_thang_nam: invoice.purchase_date,
+          ma_khach_hang: invoice.customer_code,
+          bien_so_xe: "",
+          ngay_mua: invoice.purchase_date,
+          san_pham_1: invoice.products?.[0]?.name || "",
+          ngay_den_han: invoice.due_date,
+          san_pham_2: invoice.products?.[1]?.name || "",
+          san_pham_3: invoice.products?.[2]?.name || "",
         },
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      logger.error(`❌ API ZNS trả về lỗi cho ${invoice.invoice_code}: HTTP ${response.status}`);
+      logger.error(`❌ API ZNS trả về lỗi cho ${invoice.invoice_code}: HTTP ${response.status} - ${errorText}`);
       return false;
     }
 
