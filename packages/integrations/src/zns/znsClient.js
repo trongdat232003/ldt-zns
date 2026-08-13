@@ -8,12 +8,12 @@ export async function sendZNSMessage(invoice) {
   const displayName = invoice.customer_name;
 
   try {
-    const response = await fetch("https://api.yoursales.vn/api/public/zns/send", {
-      method: "POST",
+    const response = await fetch('https://api.yoursales.vn/api/public/zns/send', {
+      method: 'POST',
       headers: {
         Authorization: `Basic ${env.ZNS_API_KEY}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
       body: JSON.stringify({
         template_id: env.ZNS_TEMPLATE_ID,
@@ -28,20 +28,19 @@ export async function sendZNSMessage(invoice) {
         // },
         data: {
           ten_khach_hang: displayName,
-          ma_khach_hang: invoice.customer_code,
-          bien_so_xe: "",
-          ngay_mua: invoice.purchase_date,
-          san_pham_1: invoice.products?.[0]?.name || "",
-          ngay_den_han: invoice.due_date,
-          san_pham_2: invoice.products?.[1]?.name || "",
-          san_pham_3: invoice.products?.[2]?.name || "",
+          bien_so_xe: displayName,
+          sdt: invoice.phone,
+          ngay_thang_nam: invoice.date,
+          thoi_han: `đến ${invoice.due_date}`,
         },
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      logger.error(`❌ API ZNS trả về lỗi cho ${invoice.invoice_code}: HTTP ${response.status} - ${errorText}`);
+      logger.error(
+        `❌ API ZNS trả về lỗi cho ${invoice.invoice_code}: HTTP ${response.status} - ${errorText}`,
+      );
       return false;
     }
 
