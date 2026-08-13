@@ -8,20 +8,6 @@ export async function sendZNSMessage(invoice) {
   const displayName = invoice.customer_name;
 
   try {
-    const payload = {
-      template_id: env.ZNS_TEMPLATE_ID,
-      phone: invoice.phone,
-      data: {
-        ten_khach_hang: displayName,
-        bien_so_xe: displayName,
-        sdt: invoice.phone,
-        ngay_thang_nam: invoice.date,
-        thoi_han: `đến ${invoice.due_date}`,
-      },
-    };
-
-    logger.info(`request.payload: ${JSON.stringify(payload)}`);
-
     const response = await fetch('https://api.yoursales.vn/api/public/zns/send', {
       method: 'POST',
       headers: {
@@ -29,12 +15,29 @@ export async function sendZNSMessage(invoice) {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        template_id: env.ZNS_TEMPLATE_ID,
+        phone: invoice.phone,
+        // data: {
+        //   ten_khach_hang: displayName,
+        //   bien_so_xe: displayName,
+        //   sdt: invoice.phone,
+        //   ngay_thang_nam: invoice.purchase_date,
+        //   lan_thay_nhot: "1",
+        //   so_kilomet: ""
+        // },
+        data: {
+          ten_khach_hang: displayName,
+          bien_so_xe: displayName,
+          sdt: invoice.phone,
+          ngay_thang_nam: invoice.purchase_date,
+          thoi_han: `đến ${invoice.due_date}`,
+        },
+      }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      logger.error(`response.body: ${errorText}`);
       logger.error(
         `❌ API ZNS trả về lỗi cho ${invoice.invoice_code}: HTTP ${response.status} - ${errorText}`,
       );
