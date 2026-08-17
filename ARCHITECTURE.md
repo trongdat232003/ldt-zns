@@ -1,3 +1,5 @@
+t
+
 # 📐 KIẾN TRÚC DỰ ÁN ZNS AUTOMATION & DASHBOARD (zns-auto) — v2 (Monorepo)
 
 Hệ thống **ZNS Auto** là giải pháp tự động hóa quy trình chăm sóc khách hàng và nhắc nhở lịch bảo dưỡng/thay nhớt định kỳ cho **Linh Thành Đạt**.
@@ -9,6 +11,7 @@ Hệ thống tích hợp giữa **KiotViet API**, cơ sở dữ liệu **Supabas
 ---
 
 ## 📑 MỤC LỤC
+
 1. [Tổng Quan Hệ Thống](#1-tổng-quan-hệ-thống)
 2. [Nguyên Tắc Kiến Trúc](#2-nguyên-tắc-kiến-trúc)
 3. [Sơ Đồ Kiến Trúc](#3-sơ-đồ-kiến-trúc)
@@ -17,14 +20,15 @@ Hệ thống tích hợp giữa **KiotViet API**, cơ sở dữ liệu **Supabas
 6. [Chi Tiết Các Thành Phần](#6-chi-tiết-các-thành-phần)
 7. [Cấu Trúc Cơ Sở Dữ Liệu (Database Schema)](#7-cấu-trúc-cơ-sở-dữ-liệu-database-schema)
 8. [Biến Môi Trường (Environment Variables)](#8-biến-môi-trường-environment-variables)
-9. [Triển Khai & Vận Hành (Deployment)](#9-triển-khai--vận-hành-deployment)
-10. [Testing & Code Quality](#10-testing--code-quality)
+9. [Triển Khai &amp; Vận Hành (Deployment)](#9-triển-khai--vận-hành-deployment)
+10. [Testing &amp; Code Quality](#10-testing--code-quality)
 
 ---
 
 ## 1. TỔNG QUAN HỆ THỐNG
 
 Hệ thống gồm 3 luồng chính:
+
 1. **Thu thập dữ liệu tự động (Collector)**: Hằng ngày kết nối với KiotViet API lấy danh sách hóa đơn bán hàng phát sinh, lọc các sản phẩm bảo dưỡng/thay nhớt, tính toán ngày đến hạn (+30 ngày) và lưu vào Supabase.
 2. **Gửi tin nhắn tự động (Sender)**: Kiểm tra các lịch nhắc nhở đến hạn trong ngày (`due_date == today` & `sent == false`), tự động gửi tin nhắn Zalo ZNS tới số điện thoại khách hàng và cập nhật trạng thái đã gửi.
 3. **Web Dashboard Quản Trị (Frontend & API Server)**: Giao diện web trực quan giúp ban quản lý và nhân viên theo dõi thống kê, tra cứu lịch nhắc nhở, quản lý danh mục sản phẩm nhớt và quản lý tài khoản người dùng.
@@ -35,15 +39,16 @@ Hệ thống gồm 3 luồng chính:
 
 Đây là phần khác biệt lớn nhất so với v1 — mọi module mới phải tuân theo 3 lớp tách biệt:
 
-| Lớp | Vai trò | Ví dụ | Được import bởi |
-|---|---|---|---|
-| **Integration** | Chỉ gọi API bên ngoài (KiotViet, ZNS). Không biết gì về `reminders`. | `packages/integrations/*` | core |
-| **Domain / Core** | Logic thuần (tính `due_date`, lọc oil products). Không I/O, dễ unit test. | `packages/core/*` | worker |
-| **Repository / DB** | Chỉ CRUD Supabase. Không có logic nghiệp vụ. | `packages/db/*` | core, worker, api |
+| Lớp                      | Vai trò                                                                        | Ví dụ                     | Được import bởi |
+| ------------------------- | ------------------------------------------------------------------------------- | --------------------------- | ------------------- |
+| **Integration**     | Chỉ gọi API bên ngoài (KiotViet, ZNS). Không biết gì về`reminders`.   | `packages/integrations/*` | core                |
+| **Domain / Core**   | Logic thuần (tính`due_date`, lọc oil products). Không I/O, dễ unit test. | `packages/core/*`         | worker              |
+| **Repository / DB** | Chỉ CRUD Supabase. Không có logic nghiệp vụ.                               | `packages/db/*`           | core, worker, api   |
 
 Quy tắc phụ thuộc: **Integration ⟶ Core ⟶ App** (worker/api). Core không bao giờ phụ thuộc ngược lại App. Điều này cho phép test `reminderService.js` (tính ngày, lọc sản phẩm) mà không cần mock network hay database thật — xem `packages/core/src/reminderService.test.js`.
 
 Ngoài ra:
+
 - **Một nguồn sự thật cho schema**: `packages/shared/src/schemas.js` định nghĩa Zod schema cho `reminders`, `oil_products`, `user_roles` — dùng chung cho worker, api, và dashboard, tránh lệch field khi một bên đổi mà bên kia không hay.
 - **Service-role key bị cô lập**: chỉ `packages/db/src/client.js#createServiceRoleClient` được gọi, và chỉ từ `apps/api` (route `/api/users`). Worker và dashboard chỉ dùng anon client (chịu RLS).
 - **Fail-fast config**: mọi app import `env` từ `packages/shared/src/config.js`, validate bằng Zod lúc khởi động thay vì đọc `process.env.X` rải rác.
@@ -114,17 +119,17 @@ flowchart TD
 
 ## 4. CÔNG NGHỆ SỬ DỤNG
 
-| Tầng | Công nghệ / Thư viện | Vai trò |
-|---|---|---|
-| **Frontend Dashboard** | React 19, Vite 8, React Router v7, Lucide React | Giao diện điều hành, thống kê |
-| **Automation Worker** | Node.js 20 (ESM), `fetch` gốc, Zod | Thu thập hóa đơn & gửi ZNS |
-| **Admin API Server** | Express.js v5, Cors | REST cho thao tác quản lý user |
-| **Database & Auth** | Supabase (PostgreSQL, Supabase Auth, RLS) | Lưu trữ + phân quyền |
-| **Cron Job Engine** | GitHub Actions (`daily-reminder.yml`) | Chạy worker hàng ngày 7:00 AM giờ VN |
-| **Logging** | `pino` | Log JSON có cấu trúc, dùng chung worker + api |
-| **Validation** | `zod` | Validate env vars & schema dữ liệu |
-| **Testing** | Node.js built-in test runner (`node --test`) | Unit test cho `packages/core` |
-| **Tích hợp ngoài** | KiotViet OAuth2 API, Zalo ZNS HTTP API | Thu thập hóa đơn & gửi tin |
+| Tầng                        | Công nghệ / Thư viện                        | Vai trò                                          |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------------------- |
+| **Frontend Dashboard** | React 19, Vite 8, React Router v7, Lucide React | Giao diện điều hành, thống kê               |
+| **Automation Worker**  | Node.js 20 (ESM),`fetch` gốc, Zod            | Thu thập hóa đơn & gửi ZNS                   |
+| **Admin API Server**   | Express.js v5, Cors                             | REST cho thao tác quản lý user                 |
+| **Database & Auth**    | Supabase (PostgreSQL, Supabase Auth, RLS)       | Lưu trữ + phân quyền                          |
+| **Cron Job Engine**    | GitHub Actions (`daily-reminder.yml`)         | Chạy worker hàng ngày 7:00 AM giờ VN          |
+| **Logging**            | `pino`                                        | Log JSON có cấu trúc, dùng chung worker + api |
+| **Validation**         | `zod`                                         | Validate env vars & schema dữ liệu              |
+| **Testing**            | Node.js built-in test runner (`node --test`)  | Unit test cho`packages/core`                    |
+| **Tích hợp ngoài**  | KiotViet OAuth2 API, Zalo ZNS HTTP API          | Thu thập hóa đơn & gửi tin                   |
 
 ---
 
@@ -176,23 +181,29 @@ zns-auto/
 ## 6. CHI TIẾT CÁC THÀNH PHẦN
 
 ### 6.1. Worker (`apps/worker`)
+
 Thay thế `reminderScheduler.js` cũ. Chỉ điều phối — không chứa logic:
+
 1. `collect.js`: gọi `fetchInvoicesForDate` (integrations) → `buildReminderFromInvoice` (core, thuần) → `ReminderRepository.insert` (db).
 2. `send.js`: `ReminderRepository.findDueToday` (db) → `sendZnsMessage` (integrations) → `ReminderRepository.markSent` (db).
 
 ### 6.2. Core (`packages/core`)
+
 `reminderService.js` chứa 2 hàm thuần, không I/O:
-- `buildReminderFromInvoice(invoice, oilProductIds)`: lọc sản phẩm nhớt + tính `due_date = purchase_date + 30 ngày`.
-- `isDueToday(reminder, todayIso)`: kiểm tra điều kiện gửi.
+
+- `buildReminderFromInvoice(invoice, oilProductIds)`: lọc sản phẩm nhớt + tính `due_date = purchase_date + 30 ngày`. Khởi tạo `cancelled: false`, `note: null`.
+- `isDueToday(reminder, todayIso)`: kiểm tra điều kiện gửi (`due_date == today && !sent && !cancelled`).
 
 Có sẵn unit test (`reminderService.test.js`) chạy bằng `node --test`, không cần mock network/DB.
 
 ### 6.3. Dashboard (`apps/dashboard`)
+
 - `AuthContext.jsx`: đăng nhập Email/Password qua Supabase Auth, tải vai trò từ `user_roles`.
 - `Pages`: Dashboard (thống kê), Reminders (tra cứu/lọc), Products (danh mục nhớt), Users (gọi `/api/users` của `apps/api`).
 - Dùng chung `ReminderSchema`/`OilProductSchema` từ `packages/shared` để validate response, tránh lệch field với backend.
 
 ### 6.4. Admin API (`apps/api`)
+
 - `authMiddleware.js`: xác thực JWT qua anon client + kiểm tra `role === 'admin'` trong `user_roles`.
 - `routes/users.js`: thao tác `auth.admin.*` bằng **service-role client** — đây là nơi DUY NHẤT trong hệ thống được phép dùng key này.
 
@@ -203,35 +214,40 @@ Có sẵn unit test (`reminderService.test.js`) chạy bằng `node --test`, kh�
 *(Không đổi so với v1 — schema được định nghĩa lại dưới dạng Zod trong `packages/shared/src/schemas.js` để cả 3 app dùng chung.)*
 
 ### `reminders`
-| Cột | Kiểu | Mô tả |
-|---|---|---|
-| `id` | `bigint` (PK) | Mã ID tự tăng |
-| `invoice_code` | `text` (Unique) | Mã hóa đơn KiotViet |
-| `invoice_id` | `bigint` | ID hóa đơn |
-| `customer_id` | `bigint` | ID khách hàng |
-| `customer_code` | `text` | Mã khách hàng |
-| `customer_name` | `text` | Tên khách hàng |
-| `phone` | `text` | SĐT nhận ZNS |
-| `purchase_date` | `date` | Ngày mua |
-| `due_date` | `date` | Ngày nhắc (+30 ngày) |
-| `total` | `numeric` | Tổng tiền |
-| `products` | `jsonb` | Sản phẩm nhớt trong hóa đơn |
-| `sent` | `boolean` | Đã gửi ZNS chưa |
-| `sent_at` | `timestamptz` | Thời điểm gửi |
-| `created_at` | `timestamptz` | Thời gian tạo |
+
+| Cột              | Kiểu             | Mô tả                           |
+| ----------------- | ----------------- | --------------------------------- |
+| `id`            | `bigint` (PK)   | Mã ID tự tăng                  |
+| `invoice_code`  | `text` (Unique) | Mã hóa đơn KiotViet           |
+| `invoice_id`    | `bigint`        | ID hóa đơn                     |
+| `customer_id`   | `bigint`        | ID khách hàng                   |
+| `customer_code` | `text`          | Mã khách hàng                  |
+| `customer_name` | `text`          | Tên khách hàng                 |
+| `phone`         | `text`          | SĐT nhận ZNS                    |
+| `purchase_date` | `date`          | Ngày mua                         |
+| `due_date`      | `date`          | Ngày nhắc (+30 ngày)           |
+| `total`         | `numeric`       | Tổng tiền                       |
+| `products`      | `jsonb`         | Sản phẩm nhớt trong hóa đơn |
+| `sent`          | `boolean`       | Đã gửi ZNS chưa               |
+| `sent_at`       | `timestamptz`   | Thời điểm gửi                 |
+| `cancelled`     | `boolean`       | Đã bị huỷ (do khách thay nhớt lại sớm hơn) |
+| `note`          | `text`          | Ghi chú (lý do huỷ / thay thế lịch cũ) |
+| `created_at`    | `timestamptz`   | Thời gian tạo                   |
 
 ### `oil_products`
-| Cột | Kiểu | Mô tả |
-|---|---|---|
-| `product_id` | `bigint` (PK) | ID sản phẩm KiotViet |
-| `product_name` | `text` | Tên sản phẩm |
-| `category_name` | `text` | Danh mục |
+
+| Cột              | Kiểu           | Mô tả                |
+| ----------------- | --------------- | ---------------------- |
+| `product_id`    | `bigint` (PK) | ID sản phẩm KiotViet |
+| `product_name`  | `text`        | Tên sản phẩm        |
+| `category_name` | `text`        | Danh mục              |
 
 ### `user_roles`
-| Cột | Kiểu | Mô tả |
-|---|---|---|
-| `user_id` | `uuid` (PK) | ID từ `auth.users` |
-| `role` | `text` | `admin` hoặc `staff` |
+
+| Cột        | Kiểu         | Mô tả                   |
+| ----------- | ------------- | ------------------------- |
+| `user_id` | `uuid` (PK) | ID từ`auth.users`      |
+| `role`    | `text`      | `admin` hoặc `staff` |
 
 ---
 

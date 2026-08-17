@@ -1,7 +1,8 @@
 export const REMINDER_STATUS = {
   ALL: 'all',
-  SENT: 'sent',
   PENDING: 'pending',
+  SENT: 'sent',
+  CANCELLED: 'cancelled',
   FAILED: 'failed',
 };
 

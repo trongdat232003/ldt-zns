@@ -29,7 +29,9 @@ export function buildReminderFromInvoice(invoice, customerPhone) {
       quantity: item.quantity
     })) || [],
     sent: false,
-    sent_at: null
+    sent_at: null,
+    cancelled: false,
+    note: null
   };
 }
 
@@ -37,5 +39,5 @@ export function buildReminderFromInvoice(invoice, customerPhone) {
  * Kiểm tra xem reminder có đến hạn vào một ngày cụ thể hay không
  */
 export function isDueToday(reminder, todayIsoStr) {
-  return reminder.due_date === todayIsoStr && !reminder.sent;
+  return reminder.due_date === todayIsoStr && !reminder.sent && !reminder.cancelled;
 }

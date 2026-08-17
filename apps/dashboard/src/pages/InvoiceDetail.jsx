@@ -13,8 +13,11 @@ import {
   AlertCircle,
   Building2,
   Hash,
+  Bell,
+  StickyNote,
 } from 'lucide-react';
 import { useInvoiceDetail } from '../hooks/useInvoiceDetail';
+import { StatusBadge } from '../components/common/StatusBadge';
 import { ErrorState } from '../components/common/ErrorState';
 import { getPaymentMethodLabel } from '../constants/payment';
 import { getInvoiceStatusConfig } from '../constants/invoiceStatus';
@@ -60,7 +63,7 @@ function InvoiceStatusBadge({ status }) {
 const InvoiceDetail = () => {
   const { invoiceCode } = useParams();
   const navigate = useNavigate();
-  const { invoice, customer, loading, error } = useInvoiceDetail(invoiceCode);
+  const { invoice, customer, reminder, reminderError, loading, error } = useInvoiceDetail(invoiceCode);
 
   if (loading) {
     return (
@@ -103,6 +106,7 @@ const InvoiceDetail = () => {
     : invoice.invoiceDetails
     ? [invoice.invoiceDetails]
     : [];
+  const hasProductNotes = invoiceDetails.some((detail) => detail.note);
 
   const payments = Array.isArray(invoice.payments) ? invoice.payments : [];
 
@@ -211,7 +215,7 @@ const InvoiceDetail = () => {
                   <th className="text-right">Đơn giá</th>
                   <th className="text-right">Giảm giá</th>
                   <th className="text-right">Thành tiền</th>
-                  {invoiceDetails.some((d) => d.note) && <th>Ghi chú</th>}
+                  {hasProductNotes && <th>Ghi chú</th>}
                 </tr>
               </thead>
               <tbody>
@@ -220,7 +224,6 @@ const InvoiceDetail = () => {
                     detail.price && detail.quantity
                       ? detail.price * detail.quantity - (detail.discount || 0)
                       : null;
-                  const hasNote = invoiceDetails.some((d) => d.note);
                   return (
                     <tr key={detail.productId || idx}>
                       <td className="text-muted">{idx + 1}</td>
@@ -234,22 +237,57 @@ const InvoiceDetail = () => {
                           : fmtCurrency(detail.discount)}
                       </td>
                       <td className="text-right font-medium">{fmtCurrency(subtotal)}</td>
-                      {hasNote && <td className="text-muted">{detail.note || '—'}</td>}
+                      {hasProductNotes && <td className="text-muted">{detail.note || '—'}</td>}
                     </tr>
                   );
                 })}
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan={invoiceDetails.some((d) => d.note) ? 6 : 5} className="text-right total-label">
+                  <td colSpan={6} className="text-right total-label">
                     Tổng cộng
                   </td>
                   <td className="text-right total-value">{fmtCurrency(invoice.total)}</td>
-                  {invoiceDetails.some((d) => d.note) && <td />}
+                  {hasProductNotes && <td />}
                 </tr>
               </tfoot>
             </table>
           </div>
+        </SectionCard>
+      )}
+
+      {/* Lịch nhắc nhở ZNS */}
+      {reminderError && (
+        <div className="reminder-warning">
+          <AlertCircle size={16} />
+          <span>Không thể tải ghi chú và trạng thái nhắc ZNS của hóa đơn này.</span>
+        </div>
+      )}
+
+      {reminder && (
+        <SectionCard title="Lịch nhắc nhở ZNS" icon={Bell}>
+          <InfoRow
+            label="Trạng thái"
+            value={<StatusBadge sent={reminder.sent} cancelled={reminder.cancelled} error={reminder.error} />}
+            icon={Bell}
+          />
+          <InfoRow label="Ngày nhắc" value={fmtDate(reminder.due_date)} icon={Calendar} />
+          <InfoRow label="Ngày mua (ghi nhận)" value={fmtDate(reminder.purchase_date)} icon={Calendar} />
+          {reminder.sent && (
+            <InfoRow label="Thời gian gửi" value={fmtDateTime(reminder.sent_at)} icon={Calendar} />
+          )}
+          {reminder.note && (
+            <>
+              <div className="divider" />
+              <InfoRow
+                label="Ghi chú"
+                value={
+                  <span className="reminder-detail-note">{reminder.note}</span>
+                }
+                icon={StickyNote}
+              />
+            </>
+          )}
         </SectionCard>
       )}
 

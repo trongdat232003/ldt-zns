@@ -2,6 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { getReminders } from '../services/reminders.service';
 
 export function useReminders(filters) {
+  const {
+    page,
+    pageSize,
+    statusFilter,
+    searchTerm,
+    purchaseDate,
+    dueDate,
+  } = filters;
   const [data, setData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -10,7 +18,14 @@ export function useReminders(filters) {
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const { data, count, error } = await getReminders(filters);
+    const { data, count, error } = await getReminders({
+      page,
+      pageSize,
+      statusFilter,
+      searchTerm,
+      purchaseDate,
+      dueDate,
+    });
     
     if (error) {
       setError(error);
@@ -19,7 +34,14 @@ export function useReminders(filters) {
       setTotalCount(count);
     }
     setLoading(false);
-  }, [filters.page, filters.statusFilter, filters.searchTerm, filters.pageSize]);
+  }, [
+    page,
+    statusFilter,
+    searchTerm,
+    purchaseDate,
+    dueDate,
+    pageSize,
+  ]);
 
   useEffect(() => {
     load();

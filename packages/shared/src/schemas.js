@@ -15,7 +15,9 @@ export const ReminderSchema = z.object({
     quantity: z.number()
   })),
   sent: z.boolean(),
-  sent_at: z.string().nullable()
+  sent_at: z.string().nullable(),
+  cancelled: z.boolean().default(false),
+  note: z.string().nullable().optional()
 });
 
 export const OilProductSchema = z.object({

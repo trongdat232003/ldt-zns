@@ -7,6 +7,7 @@ import {
   CheckCircle2, 
   Calendar,
   Users,
+  Ban,
   Loader2
 } from 'lucide-react';
 import { useDashboard } from '../hooks/useDashboard';
@@ -42,11 +43,11 @@ const Dashboard = () => {
       bgColor: 'rgba(245, 158, 11, 0.1)',
     },
     {
-      label: 'Gửi lỗi',
-      value: stats.failed,
-      icon: <AlertTriangle size={22} />,
-      color: 'var(--danger)',
-      bgColor: 'rgba(239, 68, 68, 0.1)',
+      label: 'Đã huỷ',
+      value: stats.cancelled,
+      icon: <Ban size={22} />,
+      color: '#64748b',
+      bgColor: 'rgba(100, 116, 139, 0.1)',
     }
   ];
 
@@ -115,13 +116,18 @@ const Dashboard = () => {
                     <div>
                       <h4>{reminder.customer_name}</h4>
                       <p>{reminder.invoice_code} • {reminder.phone}</p>
+                      {reminder.note && (
+                        <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '3px', fontStyle: 'italic' }}>
+                          {reminder.note}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="recent-item-status">
                     <span className="date-text">
                       {reminder.purchase_date ? new Date(reminder.purchase_date).toLocaleDateString('vi-VN') : ''}
                     </span>
-                    <StatusBadge sent={reminder.sent} error={reminder.error} />
+                    <StatusBadge sent={reminder.sent} cancelled={reminder.cancelled} error={reminder.error} />
                   </div>
                 </div>
               ))

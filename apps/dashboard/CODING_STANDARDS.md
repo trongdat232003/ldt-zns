@@ -301,7 +301,7 @@ const load = useCallback(async () => {
 
 | Component | Props chính | Mô tả |
 |---|---|---|
-| `<StatusBadge>` | `sent`, `error` | Badge trạng thái (Đã gửi / Chờ gửi / Lỗi) |
+| `<StatusBadge>` | `sent`, `cancelled`, `error` | Badge trạng thái (Đã gửi / Chờ gửi / Đã huỷ / Lỗi) |
 | `<DataTable>` | `columns`, `rows`, `loading`, `emptyMessage`, `rowKey` | Bảng dữ liệu dùng chung, tự xử lý loading + empty |
 | `<EmptyState>` | `icon`, `message`, `description`, `action` | Hiển thị khi không có dữ liệu |
 | `<ErrorState>` | `message`, `onRetry` | Hiển thị lỗi GET + nút "Thử lại", tự map error message qua `messages.js` |

@@ -36,14 +36,55 @@ export class ReminderRepository {
   }
 
   /**
-   * Load reminders due today and not sent
+   * Tìm các reminder đang chờ gửi (chưa sent, chưa cancelled) của 1 khách hàng
+   * (customer_id trong KiotViet tương ứng 1 xe, không phải 1 người)
+   */
+  static async findPendingByCustomer(customerId) {
+    const { data, error } = await supabase
+      .from('reminders')
+      .select('invoice_code, due_date, purchase_date')
+      .eq('customer_id', customerId)
+      .eq('sent', false)
+      .eq('cancelled', false);
+
+    if (error) {
+      throw new Error(`Supabase error finding pending reminders: ${error.message}`);
+    }
+    return data || [];
+  }
+
+  /**
+   * Huỷ các reminder cũ (do có hoá đơn thay nhớt mới hơn của cùng khách/xe)
+   * @param {Array<{invoiceCode: string, note: string}>} items
+   */
+  static async cancelReminders(items) {
+    if (!items || items.length === 0) return { success: true };
+
+    // Supabase không hỗ trợ update hàng loạt với giá trị note khác nhau trong 1 câu lệnh,
+    // nên cập nhật từng dòng.
+    for (const { invoiceCode, note } of items) {
+      const { error } = await supabase
+        .from('reminders')
+        .update({ cancelled: true, note })
+        .eq('invoice_code', invoiceCode);
+
+      if (error) {
+        throw new Error(`Supabase error cancelling reminder ${invoiceCode}: ${error.message}`);
+      }
+    }
+    return { success: true };
+  }
+
+  /**
+   * Load reminders due today, not sent, and not cancelled
    */
   static async findDueToday(todayIsoStr) {
     const { data, error } = await supabase
       .from('reminders')
       .select('*')
       .eq('due_date', todayIsoStr)
-      .eq('sent', false);
+      .eq('sent', false)
+      .eq('cancelled', false);
 
     if (error) {
       throw new Error(`Supabase error fetching due reminders: ${error.message}`);

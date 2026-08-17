@@ -262,6 +262,12 @@ a:hover {
   color: var(--danger);
 }
 
+.badge-cancelled {
+  background-color: rgba(100, 116, 139, 0.12);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
 /* Loading & Empty State Containers */
 .loading-container,
 .empty-container {
@@ -381,4 +387,20 @@ a:hover {
 .clickable-row:hover .code-cell {
   color: var(--accent-hover);
   text-decoration-style: solid;
+}
+
+/* Cancelled row styling */
+.data-table tbody tr.row-cancelled {
+  opacity: 0.55;
+  background: rgba(100, 116, 139, 0.04);
+}
+
+.data-table tbody tr.row-cancelled .code-cell {
+  text-decoration: line-through;
+  text-decoration-color: #94a3b8;
+  color: #94a3b8;
+}
+
+.data-table tbody tr.row-cancelled:hover {
+  opacity: 0.75;
 }

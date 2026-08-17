@@ -44,6 +44,26 @@
   cursor: pointer;
 }
 
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.date-filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.date-input {
+  min-width: 150px;
+}
+
 /* Table Card */
 .reminders-table-card {
   overflow: hidden;
@@ -62,6 +82,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Note Cell */
+.note-cell {
+  max-width: 280px;
+  font-size: 0.8125rem;
+}
+
+.reminder-note-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.reminder-note-text.has-note {
+  color: #475569;
+  font-size: 0.775rem;
+  background: rgba(148, 163, 184, 0.12);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border-left: 2px solid var(--accent-primary);
 }
 
 /* Pagination */
@@ -99,5 +144,13 @@
   
   .search-box {
     min-width: unset;
+  }
+
+  .date-filter {
+    justify-content: space-between;
+  }
+
+  .date-input {
+    flex: 1;
   }
 }

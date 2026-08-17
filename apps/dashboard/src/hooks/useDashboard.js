@@ -6,6 +6,7 @@ export function useDashboard() {
     totalReminders: 0,
     sentToday: 0,
     pending: 0,
+    cancelled: 0,
     failed: 0,
   });
   const [recentReminders, setRecentReminders] = useState([]);

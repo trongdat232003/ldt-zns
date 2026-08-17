@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Filter,
+  Calendar,
   ChevronLeft,
   ChevronRight,
   RefreshCw
@@ -22,12 +23,16 @@ const Reminders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState(REMINDER_STATUS.ALL);
   const [searchInput, setSearchInput] = useState('');
+  const [purchaseDate, setPurchaseDate] = useState('');
+  const [dueDate, setDueDate] = useState('');
 
   const { data: reminders, totalCount, loading, error, refetch } = useReminders({
     page,
     pageSize: PAGE_SIZE,
     statusFilter,
-    searchTerm
+    searchTerm,
+    purchaseDate,
+    dueDate,
   });
 
   const handleSearch = (e) => {
@@ -64,7 +69,17 @@ const Reminders = () => {
     {
       key: 'status',
       label: 'Trạng thái',
-      render: (r) => <StatusBadge sent={r.sent} error={r.error} />,
+      render: (r) => <StatusBadge sent={r.sent} cancelled={r.cancelled} error={r.error} />,
+    },
+    {
+      key: 'note',
+      label: 'Ghi chú',
+      className: 'note-cell',
+      render: (r) => (
+        <span className={`reminder-note-text ${r.note ? 'has-note' : ''}`} title={r.note || ''}>
+          {r.note || '—'}
+        </span>
+      ),
     },
     {
       key: 'sent_at',
@@ -81,7 +96,7 @@ const Reminders = () => {
           <Search size={18} className="search-icon" />
           <input
             type="text"
-            placeholder="Tìm kiếm khách hàng, mã hoá đơn..."
+            placeholder="Tìm kiếm khách hàng, mã hoá đơn, ghi chú..."
             className="input-field search-input"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -96,11 +111,38 @@ const Reminders = () => {
             onChange={(e) => { setStatusFilter(e.target.value); setPage(0); }}
           >
             <option value={REMINDER_STATUS.ALL}>Tất cả</option>
-            <option value={REMINDER_STATUS.SENT}>Đã gửi</option>
             <option value={REMINDER_STATUS.PENDING}>Chờ gửi</option>
+            <option value={REMINDER_STATUS.SENT}>Đã gửi</option>
+            <option value={REMINDER_STATUS.CANCELLED}>Đã huỷ</option>
             <option value={REMINDER_STATUS.FAILED}>Lỗi</option>
           </select>
         </div>
+
+        <label className="date-filter">
+          <span className="date-filter-label">
+            <Calendar size={16} />
+            Ngày mua
+          </span>
+          <input
+            type="date"
+            className="input-field date-input"
+            value={purchaseDate}
+            onChange={(e) => { setPurchaseDate(e.target.value); setPage(0); }}
+          />
+        </label>
+
+        <label className="date-filter">
+          <span className="date-filter-label">
+            <Calendar size={16} />
+            Ngày nhắc
+          </span>
+          <input
+            type="date"
+            className="input-field date-input"
+            value={dueDate}
+            onChange={(e) => { setDueDate(e.target.value); setPage(0); }}
+          />
+        </label>
 
         <button className="btn btn-secondary" onClick={refetch}>
           <RefreshCw size={16} />
@@ -126,6 +168,7 @@ const Reminders = () => {
           rowKey={(r) => r.id || r.invoice_code}
           loadingText="Đang tải..."
           onRowClick={(reminder) => navigate(`/reminders/${reminder.invoice_code}`)}
+          rowClassName={(r) => r.cancelled ? 'row-cancelled' : ''}
         />
 
         {/* Pagination */}

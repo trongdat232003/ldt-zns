@@ -1,8 +1,14 @@
 import React from 'react';
-import { CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
-import { REMINDER_STATUS } from '../../constants/status';
+import { CheckCircle2, Clock, AlertTriangle, Ban } from 'lucide-react';
 
-export const StatusBadge = ({ sent, error }) => {
+export const StatusBadge = ({ sent, cancelled, error }) => {
+  if (cancelled) {
+    return (
+      <span className="badge badge-cancelled">
+        <Ban size={12} /> Đã huỷ
+      </span>
+    );
+  }
   if (sent) {
     return (
       <span className="badge badge-success">
