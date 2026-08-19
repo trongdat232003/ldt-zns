@@ -13,6 +13,7 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "npm run build --workspace=apps/dashboard",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "node --test packages/**/src/*.test.js",

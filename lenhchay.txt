@@ -9,3 +9,5 @@ npm run dev --workspace=apps/dashboard
 3. Chạy Backend (API Server)
 
 npm start --workspace=apps/api
+
+/opt/alt/alt-nodejs24/root/usr/bin/npm install --prefix /home/lwcrhbmohosting/linhthanhdat-server

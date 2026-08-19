@@ -1,9 +1,9 @@
 import { supabase } from './supabase';
 
 // API Backend URL
-// For Vercel: set VITE_API_URL to Render domain (e.g., https://ldt-zns.onrender.com)
-// For local: defaults to localhost
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3456';
+// When hosted together on cPanel or same origin, relative path '/' is used.
+// If VITE_API_URL is set, it uses that instead.
+const BASE_URL = import.meta.env.VITE_API_URL || '';
 const API_PREFIX = '/api';
 
 export async function apiRequest(path, { method = 'GET', body } = {}) {
